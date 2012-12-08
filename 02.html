@@ -60,7 +60,12 @@
 				var game = new Game;
 				game.addPoint(0,0);
 				strictEqual(game.shouldLive(0, 0), false);
-			})
+			});
+			test('count neighbors', function() {
+				var game = new Game;
+				game.addPoint(0,0);
+				strictEqual(game.countNeighbors(0, 0), 0);
+			});
 		</script>
 	</body>
 </html>

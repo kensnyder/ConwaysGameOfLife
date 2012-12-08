@@ -19,10 +19,22 @@ Game.prototype = {
 			this.grid[x] = [];
 	},
 	shouldLive: function(cellx, celly) {
+		var lives = false;
 		for (var x = -1; x <= 1; x++) {
-			
+			for (var y = -1; y <= 1; y++) {
+				//lives = t
+			}
 		}
-		return false;
+		return lives;
+	},
+	countNeighbors: function(cellx, celly) {
+		var num = 0;
+		for (var x = cellx-1; x <= 1; x++) {
+			for (var y = -1; y <= 1; y++) {
+				//lives = t
+			}
+		}
+		return num;
 	},
 	tick: function() {
 		var x, y;
