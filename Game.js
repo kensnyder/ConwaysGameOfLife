@@ -8,6 +8,9 @@ Game.prototype = {
 	},
 	isAlive: function(x,y) {
 		return this.grid[x] && !!this.grid[x][y];
+	},
+	killAt: function(x, y) {
+		this.grid[x][y] = 0;
 	}
 };
 
