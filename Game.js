@@ -17,6 +17,16 @@ Game.prototype = {
 	goingToUsePoint: function(x, y) {
 		if (!this.grid[x]) 
 			this.grid[x] = [];
+	},
+	tick: function() {
+		var x, y;
+		for (x = 0; x < 10; x++) {
+			for (y = 0; y < 10; y++) {
+				
+			}
+			
+		}
+		this.grid = [];
 	}
 };
 
