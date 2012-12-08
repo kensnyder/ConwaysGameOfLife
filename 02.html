@@ -44,6 +44,11 @@
 				game.addPoint(1, 1);
 				strictEqual(game.isAlive(1, 1), true);
 			});
+			test('points can have any index values - high!', function() {
+				var game = new Game;
+				game.addPoint(100, 100);
+				strictEqual(game.isAlive(100, 100), true);
+			});
 		</script>
 	</body>
 </html>

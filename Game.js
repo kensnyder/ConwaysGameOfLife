@@ -1,5 +1,5 @@
 function Game() {
-	this.grid = [[]];
+	this.grid = [];
 }
 
 Game.prototype = {
@@ -8,7 +8,7 @@ Game.prototype = {
 		this.grid[x][y] = 1;
 	},
 	isAlive: function(x,y) {
-		return this.grid[x] && !!this.grid[x][y];
+		return !!(this.grid[x] && this.grid[x][y]);
 	},
 	killAt: function(x, y) {
 		this.goingToUsePoint(x, y)
