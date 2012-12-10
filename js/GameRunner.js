@@ -65,7 +65,7 @@ GameRunner.prototype = {
 		return this;
 	},
 	getFps: function() {
-		return Math.floor((+new Date - this._startTime) / this.tick);
+		return Math.floor(1000 / ((+new Date - this._startTime) / this.tick));
 	},
 	_killOffscreenPoints: function() {
 		this.game.getPoints().forEach(function(xy) {
