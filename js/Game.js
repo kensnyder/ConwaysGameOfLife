@@ -10,62 +10,58 @@ Game.prototype = {
 		return this;
 	},
 	isAlive: function isAlive(x,y) {
-		return !!this.grid[x+','+y];
+		return this.grid[x+','+y] || false;
 	},
 	removePoint: function removePoint(x,y) {
 		delete this.grid[x+','+y];
 	},
 	tick: function tick() {
 		var newGrid = {};		
-		for (var point in this.grid) {
-			this._getNeighbors(point).forEach(function _buildGrid(point) {
-				var cnt = this._neighborShortcount(point);
+		this.getPoints().forEach(function _processPoint(xy) {			
+			this._getNeighbors(xy[0],xy[1]).forEach(function _buildGrid(xy) {
+				var x = xy[0], y = xy[1];
+				var cnt = this._neighborShortcount(x, y);
 				if (
-					(this.grid[point] && cnt >= 2 && cnt <= 3)
-					|| (!this.grid[point] && cnt == 3)
+					(this.grid[x+','+y] && cnt >= 2 && cnt <= 3)
+					|| (!this.grid[x+','+y] && cnt == 3)
 				) {
-					newGrid[point] = 1;
+					newGrid[x+','+y] = 1;
 				}
 			}.bind(this));
-		}
+		}.bind(this));
 		this.grid = newGrid;
 		return this;
 	},
 	getPoints: function getPoints() {
-		var points = [];
+		var points = [], xy;
 		for (var point in this.grid) {
-			points.push(point.split(','));
+			xy = point.split(',');
+			points.push([+xy[0], +xy[1]]);
 		}
 		return points;
 	},
 	serialize: function serialize() {
 		return JSON.stringify(this.grid);
 	},
-	_getNeighbors: function _getNeighbors(point) {
-		var coords = point.split(',');
-		coords[0] = parseInt(coords[0], 10);
-		coords[1] = parseInt(coords[1], 10);
+	_getNeighbors: function _getNeighbors(coordX, coordY) {
 		var x, y;
 		var neighbors = [];
-		for (x = coords[0]-1; x <= coords[0]+1; x++) {
-			for (y = coords[1]-1; y <= coords[1]+1; y++) {
-				if (x == coords[0] && y == coords[1]) {
+		for (x = coordX-1; x <= coordX+1; x++) {
+			for (y = coordY-1; y <= coordY+1; y++) {
+				if (x == coordX && y == coordY) {
 					continue;
 				}
-				neighbors.push(x+','+y);
+				neighbors.push([x,y]);
 			}
 		}
 		return neighbors;
 	},
-	_neighborShortcount: function _neighborShortcount(point) {
-		var coords = point.split(',');
-		coords[0] = parseInt(coords[0], 10);
-		coords[1] = parseInt(coords[1], 10);		
+	_neighborShortcount: function _neighborShortcount(coordX, coordY) {
 		var x, y;
 		var neighbors = 0;
-		for (x = coords[0]-1; x <= coords[0]+1; x++) {
-			for (y = coords[1]-1; y <= coords[1]+1; y++) {
-				if (x == coords[0] && y == coords[1]) {
+		for (x = coordX-1; x <= coordX+1; x++) {
+			for (y = coordY-1; y <= coordY+1; y++) {
+				if (x == coordX && y == coordY) {
 					continue;
 				}
 				neighbors += this.grid[x+','+y] || 0;

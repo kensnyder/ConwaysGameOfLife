@@ -17,14 +17,16 @@
 	<body>
 		<script>
 			var runner = new GameRunner(document.body, {
-				width: Math.floor(document.body.offsetWidth / 7),
-				height: Math.floor(document.body.offsetHeight / 7),
+				width: Math.floor(document.body.offsetWidth / 21),
+				height: Math.floor(document.body.offsetHeight /21),
 				interval: 0
 			});
 			//runner.addShape('DIEHARD');
+			//runner.addShape('SQUARE', 40, 40);
+			//runner.addShape('SQUARE', 60, 60);
 			//runner.addShape('RPENT');
 			//runner.addShape('ACORN');
-			runner.seed(0.10);
+			runner.seed(0.08);
 			runner.start();
 			setTimeout(function() {
 				runner.stop();

@@ -40,13 +40,14 @@ GameRunner.prototype = {
 		this.game.addPoint(x, y);
 	},
 	addShape: function addShape(name, x, y) {
+		var shape = GameShapes[name];
 		if (typeof x != 'number') {
-			x = Math.floor(this.width / 2);
+			x = Math.floor(this.width / 2 - shape.size[0] / 2);
 		}
 		if (typeof y != 'number') {
-			y = Math.floor(this.height / 2);
+			y = Math.floor(this.height / 2 - shape.size[1] / 2);
 		}
-		GameShapes[name].forEach(function(xy) {
+		shape.points.forEach(function(xy) {
 			this.game.addPoint(x + xy[0], y + xy[1]);
 		}.bind(this));
 	},
@@ -56,7 +57,9 @@ GameRunner.prototype = {
 			this.tick++;
 			this.game.tick();
 			this.renderer.draw();
-			this._killOffscreenPoints();
+			if (this.tick % 100 == 0) {
+				this._killOffscreenPoints();
+			}
 		}.bind(this), this.interval);
 		return this;
 	},
@@ -69,7 +72,7 @@ GameRunner.prototype = {
 	},
 	_killOffscreenPoints: function _killOffscreenPoints() {
 		this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
-			if (xy[0] < -5 || xy[1] < -5 || xy[0] > this.width + 5 || xy[1] > this.height + 5) {
+			if (xy[0] < -15 || xy[1] < -15 || xy[0] > this.width + 15 || xy[1] > this.height + 15) {
 				this.game.removePoint(xy[0], xy[1]);
 			}
 		}.bind(this));

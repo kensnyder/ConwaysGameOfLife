@@ -4,7 +4,7 @@ function GameRenderer(runner) {
 	this.runner = runner;
 	this.div = runner.div;
 	this.div.style.position = 'relative';
-	this._setup();
+	this.reset();
 }
 
 GameRenderer.prototype = {
@@ -12,7 +12,8 @@ GameRenderer.prototype = {
 		this._drawBoard();
 		return this.numAlive;
 	},
-	_setup: function _setup() {
+	reset: function reset() {
+		this.div.innerHTML = '';
 		this.grid = this._makeCanvas();
 		this._drawGrid();
 		window.addEventListener('resize', this._drawGrid.bind(this), false);
@@ -68,9 +69,10 @@ GameRenderer.prototype = {
 		}.bind(this));
 		this.board.ctx.fillStyle = 'rgb(0,200,100)';
 		this.board.ctx.font = '10pt Arial';
-		this.board.ctx.fillText('Cells: ' + this.numAlive, 6, 16);
-		this.board.ctx.fillText('Tick: ' + this.runner.tick, 6, 28);
-		this.board.ctx.fillText('FPS: ' + this.runner.getFps(), 6, 40);
+		this.board.ctx.fillText('Size: ' + this.runner.width + 'x' + this.runner.height, 6, 16);
+		this.board.ctx.fillText('Cells: ' + this.numAlive, 6, 28);
+		this.board.ctx.fillText('Tick: ' + this.runner.tick, 6, 40);
+		this.board.ctx.fillText('FPS: ' + this.runner.getFps(), 6, 52);
 	}
 };
 
