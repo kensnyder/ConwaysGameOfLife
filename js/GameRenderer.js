@@ -69,7 +69,8 @@ GameRenderer.prototype = {
 		}.bind(this));
 		this.board.ctx.fillStyle = 'rgb(0,200,100)';
 		this.board.ctx.font = '10pt Arial';
-		this.board.ctx.fillText('Size: ' + this.runner.width + 'x' + this.runner.height, 6, 16);
+		//this.board.ctx.fillText('Size: ' + this.runner.width + 'x' + this.runner.height, 6, 16);
+		this.board.ctx.fillText('Size: ' + (this.runner.game.max[0] - this.runner.game.min[0]) + 'x' + (this.runner.game.max[1] - this.runner.game.min[1]) , 6, 16);
 		this.board.ctx.fillText('Cells: ' + this.numAlive, 6, 28);
 		this.board.ctx.fillText('Tick: ' + this.runner.tick, 6, 40);
 		this.board.ctx.fillText('FPS: ' + this.runner.getFps(), 6, 52);

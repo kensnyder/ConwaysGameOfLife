@@ -2,10 +2,16 @@
 
 function Game() {
 	this.grid = {};
+	this.min = [0,0];
+	this.max = [0,0];
 }
 
 Game.prototype = {
 	addPoint: function addPoint(x,y) {
+		     if (x < this.min[0]) this.min[0] = x;
+		else if (x > this.max[0]) this.max[0] = x;
+		else if (y < this.min[1]) this.min[1] = y;
+		else if (y > this.max[1]) this.max[1] = y;
 		this.grid[x+','+y] = 1;
 		return this;
 	},
@@ -16,7 +22,9 @@ Game.prototype = {
 		delete this.grid[x+','+y];
 	},
 	tick: function tick() {
-		var newGrid = {};		
+		var newGrid = {};
+		this.min = [0,0];
+		this.max = [0,0];		
 		this.getPoints().forEach(function _processPoint(xy) {			
 			this._getNeighbors(xy[0],xy[1]).forEach(function _buildGrid(xy) {
 				var x = xy[0], y = xy[1];
@@ -25,6 +33,10 @@ Game.prototype = {
 					(this.grid[x+','+y] && cnt >= 2 && cnt <= 3)
 					|| (!this.grid[x+','+y] && cnt == 3)
 				) {
+					     if (x < this.min[0]) this.min[0] = x;
+					else if (x > this.max[0]) this.max[0] = x;
+					else if (y < this.min[1]) this.min[1] = y;
+					else if (y > this.max[1]) this.max[1] = y;						
 					newGrid[x+','+y] = 1;
 				}
 			}.bind(this));
