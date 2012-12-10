@@ -11,6 +11,7 @@ function GameRunner(div, options) {
 
 GameRunner.prototype = {
 	reset: function() {
+		this.tick = 0;
 		this.game = new Game();
 		this.renderer = new GameRenderer(this);
 	},
@@ -50,7 +51,9 @@ GameRunner.prototype = {
 		}.bind(this));
 	},
 	start: function() {
+		this._startTime = +new Date;
 		this._intervalId = setInterval(function() {
+			this.tick++;
 			this.game.tick();
 			this.renderer.draw();
 			this._killOffscreenPoints();
@@ -60,6 +63,9 @@ GameRunner.prototype = {
 	stop: function() {
 		clearInterval(this._intervalId);
 		return this;
+	},
+	getFps: function() {
+		return Math.floor((+new Date - this._startTime) / this.tick);
 	},
 	_killOffscreenPoints: function() {
 		this.game.getPoints().forEach(function(xy) {

@@ -66,9 +66,11 @@ GameRenderer.prototype = {
 				this.spacing.height - 1
 			);
 		}.bind(this));
-		this.board.ctx.fillStyle = 'rgba(0,0,255,0.5)';
+		this.board.ctx.fillStyle = 'rgba(0,0,255,0.33)';
 		this.board.ctx.font = '10pt Arial';
-		this.board.ctx.fillText('Cell count: ' + this.numAlive, 6, 16);
+		this.board.ctx.fillText('Cells: ' + this.numAlive, 6, 16);
+		this.board.ctx.fillText('Tick: ' + this.runner.tick, 6, 28);
+		this.board.ctx.fillText('FPS: ' + this.runner.getFps(), 6, 40);
 	}
 };
 
