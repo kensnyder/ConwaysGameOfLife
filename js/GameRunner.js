@@ -10,36 +10,36 @@ function GameRunner(div, options) {
 }
 
 GameRunner.prototype = {
-	reset: function() {
+	reset: function reset() {
 		this.tick = 0;
 		this.game = new Game();
 		this.renderer = new GameRenderer(this);
 	},
-	setBoardSize: function(width, height) {
+	setBoardSize: function setBoardSize(width, height) {
 		this.width = width;
 		this.height = height;
 		return this;
 	},
-	setInterval: function(milliseconds) {
+	setInterval: function setInterval(milliseconds) {
 		this.interval = milliseconds;
 		return this;
 	},
-	seed: function(ratio) {
+	seed: function seed(ratio) {
 		var numPoints = Math.floor(this.width * this.height * ratio);
 		for (var i = 0; i < numPoints; i++) {
 			this._addRandomPoint();
 		}
 		return this;
 	},
-	isStuck: function() {
+	isStuck: function isStuck() {
 		
 	},
-	_addRandomPoint: function() {
+	_addRandomPoint: function _addRandomPoint() {
 		var x = Math.floor(this.width * Math.random() * 0.8) + Math.floor(this.width * 0.1);
 		var y = Math.floor(this.height * Math.random() * 0.8) + Math.floor(this.height * 0.1);
 		this.game.addPoint(x, y);
 	},
-	addShape: function(name, x, y) {
+	addShape: function addShape(name, x, y) {
 		if (typeof x != 'number') {
 			x = Math.floor(this.width / 2);
 		}
@@ -50,9 +50,9 @@ GameRunner.prototype = {
 			this.game.addPoint(x + xy[0], y + xy[1]);
 		}.bind(this));
 	},
-	start: function() {
+	start: function start() {
 		this._startTime = +new Date;
-		this._intervalId = setInterval(function() {
+		this._intervalId = setInterval(function _tickAndDraw() {
 			this.tick++;
 			this.game.tick();
 			this.renderer.draw();
@@ -60,15 +60,15 @@ GameRunner.prototype = {
 		}.bind(this), this.interval);
 		return this;
 	},
-	stop: function() {
+	stop: function stop() {
 		clearInterval(this._intervalId);
 		return this;
 	},
-	getFps: function() {
+	getFps: function getFps() {
 		return Math.floor(1000 / ((+new Date - this._startTime) / this.tick));
 	},
-	_killOffscreenPoints: function() {
-		this.game.getPoints().forEach(function(xy) {
+	_killOffscreenPoints: function _killOffscreenPoints() {
+		this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
 			if (xy[0] < -5 || xy[1] < -5 || xy[0] > this.width + 5 || xy[1] > this.height + 5) {
 				this.game.removePoint(xy[0], xy[1]);
 			}

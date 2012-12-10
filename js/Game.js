@@ -5,20 +5,20 @@ function Game() {
 }
 
 Game.prototype = {
-	addPoint: function(x,y) {
+	addPoint: function addPoint(x,y) {
 		this.grid[x+','+y] = 1;
 		return this;
 	},
-	isAlive: function(x,y) {
+	isAlive: function isAlive(x,y) {
 		return !!this.grid[x+','+y];
 	},
-	removePoint: function(x,y) {
+	removePoint: function removePoint(x,y) {
 		delete this.grid[x+','+y];
 	},
-	tick: function() {
+	tick: function tick() {
 		var newGrid = {};		
 		for (var point in this.grid) {
-			this._getNeighbors(point).forEach(function(point) {
+			this._getNeighbors(point).forEach(function _buildGrid(point) {
 				var cnt = this._neighborShortcount(point);
 				if (
 					(this.grid[point] && cnt >= 2 && cnt <= 3)
@@ -31,17 +31,17 @@ Game.prototype = {
 		this.grid = newGrid;
 		return this;
 	},
-	getPoints: function() {
+	getPoints: function getPoints() {
 		var points = [];
 		for (var point in this.grid) {
 			points.push(point.split(','));
 		}
 		return points;
 	},
-	serialize: function() {
+	serialize: function serialize() {
 		return JSON.stringify(this.grid);
 	},
-	_getNeighbors: function(point) {
+	_getNeighbors: function _getNeighbors(point) {
 		var coords = point.split(',');
 		coords[0] = parseInt(coords[0], 10);
 		coords[1] = parseInt(coords[1], 10);
@@ -57,7 +57,7 @@ Game.prototype = {
 		}
 		return neighbors;
 	},
-	_neighborShortcount: function(point) {
+	_neighborShortcount: function _neighborShortcount(point) {
 		var coords = point.split(',');
 		coords[0] = parseInt(coords[0], 10);
 		coords[1] = parseInt(coords[1], 10);		
