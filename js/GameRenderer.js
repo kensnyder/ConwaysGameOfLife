@@ -3,7 +3,9 @@
 function GameRenderer(game, options) {
 	this.game = game;
 	this.div = options.div;
-	this.blockSize = options.blockSize || {width:6,height:6};
+	this.blockSize = typeof options.blockSize == 'number' ? 
+		{width:options.blockSize,height:options.blockSize} : 
+		typeof options.blockSize == 'object' ? options.blockSize : {width:6,height:6};
 	this.div.style.position = 'relative';
 	this.drawGrid = ('drawGrid' in options) ? options.drawGrid : true;
 	this._drawTimestamps = [];
@@ -13,6 +15,9 @@ function GameRenderer(game, options) {
 GameRenderer.prototype = {
 	draw: function draw() {
 		this.frameCount++;
+		if (this.frameCount % 50 == 0) {
+			this.killOffscreenPoints();
+		}
 		this._drawTimestamps.push(+new Date);
 		if (this._drawTimestamps.length > 20) {
 			this._drawTimestamps.shift();
@@ -54,6 +59,10 @@ GameRenderer.prototype = {
 		return canvas;
 	},
 	_drawGrid: function _drawGrid() {
+		this.boardSize = {
+			x: Math.floor(this.grid.width/this.blockSize.width),
+			y: Math.floor(this.grid.height/this.blockSize.height)
+		};
 		if (!this.drawGrid) {
 			return;
 		}
@@ -89,7 +98,7 @@ GameRenderer.prototype = {
 		}.bind(this));
 		this.board.ctx.fillStyle = 'rgb(0,200,100)';
 		this.board.ctx.font = '10pt Arial';
-		this.board.ctx.fillText('Board: ' + Math.floor(this.board.width/this.blockSize.width) + 'x' + Math.floor(this.board.height/this.blockSize.height), 6, 16);
+		this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 16);
 		this.board.ctx.fillText('Size: ' + (this.game.max[0] - this.game.min[0]) + 'x' + (this.game.max[1] - this.game.min[1]) , 6, 28);
 		this.board.ctx.fillText('Tick: ' + this.frameCount, 6, 40);
 		this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 52);
@@ -97,7 +106,7 @@ GameRenderer.prototype = {
 	},
 	killOffscreenPoints: function killOffscreenPoints() {
 		this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
-			if (xy[0] < -15 || xy[1] < -15 || xy[0] > this.width + 15 || xy[1] > this.height + 15) {
+			if (xy[0] < -15 || xy[1] < -15 || xy[0] > this.boardSize.x + 15 || xy[1] > this.boardSize.y + 15) {
 				this.game.removePoint(xy[0], xy[1]);
 			}
 		}.bind(this));
