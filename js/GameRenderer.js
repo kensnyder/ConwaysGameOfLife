@@ -1,18 +1,38 @@
 "use strict";
 
-function GameRenderer(runner) {
-	this.runner = runner;
-	this.div = runner.div;
+function GameRenderer(game, options) {
+	this.game = game;
+	this.div = options.div;
+	this.blockSize = options.blockSize || {width:6,height:6};
 	this.div.style.position = 'relative';
+	this.drawGrid = ('drawGrid' in options) ? options.drawGrid : true;
+	this._drawTimestamps = [];
 	this.reset();
 }
 
 GameRenderer.prototype = {
 	draw: function draw() {
+		this.frameCount++;
+		this._drawTimestamps.push(+new Date);
+		if (this._drawTimestamps.length > 20) {
+			this._drawTimestamps.shift();
+		}
 		this._drawBoard();
-		return this.numAlive;
+		return this;
+	},
+	getFps: function() {
+		if (this._drawTimestamps.length == 0) {
+			return 0;
+		} 
+		var ms = +new Date - this._drawTimestamps[0];
+		var avgMs = ms / this._drawTimestamps.length;
+		if (avgMs < 1) {
+			return 0;
+		}
+		return Math.round(1000 / avgMs, 0);
 	},
 	reset: function reset() {
+		this.frameCount = 0;
 		this.div.innerHTML = '';
 		this.grid = this._makeCanvas();
 		this._drawGrid();
@@ -34,15 +54,16 @@ GameRenderer.prototype = {
 		return canvas;
 	},
 	_drawGrid: function _drawGrid() {
-		this.spacing = {};
+		if (!this.drawGrid) {
+			return;
+		}
 		this.grid.ctx.strokeStyle = '#eee';
 		this._drawGridLines('width'); // vertical lines	
 		this._drawGridLines('height'); // horizontal lines
 	},
 	_drawGridLines: function _drawGridLines(prop) {
 		this.grid.ctx.beginPath();
-		this.spacing[prop] = Math.floor(this.grid[prop] / this.runner[prop]);
-		for (var i = 0; i <= this.grid[prop]; i += this.spacing[prop]) {
+		for (var i = 0; i <= this.grid[prop]; i += this.blockSize[prop]) {
 			if (prop == 'width') { // vertical lines	
 				this.grid.ctx.moveTo(i, 0);
 				this.grid.ctx.lineTo(i, this.grid.height);
@@ -54,26 +75,32 @@ GameRenderer.prototype = {
 		}
 		this.grid.ctx.stroke();
 	},
-	_drawBoard: function _drawBoard() {
+	_drawBoard: function _drawBoard() {	
+		var gridWidth = this.drawGrid ? 1 : 0;		
 		this.board.ctx.fillStyle = '#000';
 		this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
-		var points = this.runner.game.getPoints();
-		this.numAlive = points.length;
-		points.forEach(function _drawPoint(xy) {
+		this.game.getPoints().forEach(function _drawPoint(xy) {			
 			this.board.ctx.fillRect(
-				xy[0] * this.spacing.width + 1,
-				xy[1] * this.spacing.height + 1,
-				this.spacing.width - 1,
-				this.spacing.height - 1
+				xy[0] * this.blockSize.width + gridWidth,
+				xy[1] * this.blockSize.height + gridWidth,
+				this.blockSize.width - gridWidth,
+				this.blockSize.height - gridWidth
 			);
 		}.bind(this));
 		this.board.ctx.fillStyle = 'rgb(0,200,100)';
 		this.board.ctx.font = '10pt Arial';
-		//this.board.ctx.fillText('Size: ' + this.runner.width + 'x' + this.runner.height, 6, 16);
-		this.board.ctx.fillText('Size: ' + (this.runner.game.max[0] - this.runner.game.min[0]) + 'x' + (this.runner.game.max[1] - this.runner.game.min[1]) , 6, 16);
-		this.board.ctx.fillText('Cells: ' + this.numAlive, 6, 28);
-		this.board.ctx.fillText('Tick: ' + this.runner.tick, 6, 40);
-		this.board.ctx.fillText('FPS: ' + this.runner.getFps(), 6, 52);
+		this.board.ctx.fillText('Board: ' + Math.floor(this.board.width/this.blockSize.width) + 'x' + Math.floor(this.board.height/this.blockSize.height), 6, 16);
+		this.board.ctx.fillText('Size: ' + (this.game.max[0] - this.game.min[0]) + 'x' + (this.game.max[1] - this.game.min[1]) , 6, 28);
+		this.board.ctx.fillText('Tick: ' + this.frameCount, 6, 40);
+		this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 52);
+		this.board.ctx.fillText('FPS: ' + this.getFps(), 6, 64);
+	},
+	killOffscreenPoints: function killOffscreenPoints() {
+		this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
+			if (xy[0] < -15 || xy[1] < -15 || xy[0] > this.width + 15 || xy[1] > this.height + 15) {
+				this.game.removePoint(xy[0], xy[1]);
+			}
+		}.bind(this));
 	}
 };
 

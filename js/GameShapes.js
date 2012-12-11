@@ -2,6 +2,23 @@
 
 var GameShapes = {
 	
+	add: function(game, name, x, y) {
+		if (!x) x = 0;
+		if (!y) y = 0;
+		this[name].points.forEach(function(xy) {
+			game.addPoint(x + xy[0], y + xy[1]);
+		});
+		return this;
+	},
+	seed: function seed(game, ratio, width, height) {
+		var numPoints = Math.floor(ratio * width * height);
+		for (var i = 0; i < numPoints; i++) {
+			this._addRandomPoint(game, width, height);
+			game.addPoint(Math.floor(width * Math.random()), Math.floor(height * Math.random()));
+		}
+		return this;
+	},
+	
 	GLIDER: {
 		name: 'Glider',
 		size: [3,3],
@@ -63,6 +80,14 @@ var GameShapes = {
 		]
 	},
 	
+	FLAT: {
+		name: 'Double Block Laying Switch Engine',
+		size: [39,1],
+		points: [
+			[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],   [9,0],[10,0],[11,0],[12,0],[13,0],       [17,0],[18,0],[19,0],     [26,0],[27,0],[28,0],[29,0],[30,0],[31,0],[32,0],   [34,0],[35,0],[36,0],[37,0],[38,0]
+		]
+	},
+	
 	GLIDERGUN: {
 		name: 'Gosper Glider Gun',
 		size: [36,9],
@@ -75,7 +100,8 @@ var GameShapes = {
 		]
 	}
 	
-}
+};
+
 
 
 

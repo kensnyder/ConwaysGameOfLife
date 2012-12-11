@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Conway's Game of Life</title>
+		<script src="./js/Game.js"></script>
+		<script src="./js/GameShapes.js"></script>
+		<style>
+			html, body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			var game = new Game();
+			GameShapes.add(game, 'DIEHARD', 0, 0);
+			GameShapes.add(game, 'DIEHARD', 15, 15);
+			GameShapes.add(game, 'DIEHARD', 30, 30);
+			GameShapes.add(game, 'DIEHARD', 45, 45);
+			GameShapes.add(game, 'DIEHARD', 60, 60);
+			console.time('diehard');
+			var ticks = 130;
+			while (ticks--) {
+				game.tick();
+			}
+			console.timeEnd('diehard');
+		</script>
+	</body>
+</html>

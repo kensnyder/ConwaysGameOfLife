@@ -1,8 +1,7 @@
 "use strict";
 
-function GameRunner(div, options) {
-	this.div = div;
-	options = options || {};
+function GameRunner(options) {
+	this.options = options || {};
 	this.width = options.width || 100;
 	this.height = options.height || 30;
 	this.interval = options.interval || 50;
@@ -13,7 +12,7 @@ GameRunner.prototype = {
 	reset: function reset() {
 		this.tick = 0;
 		this.game = new Game();
-		this.renderer = new GameRenderer(this);
+		this.renderer = new GameRenderer(this.game, this.options);
 	},
 	setBoardSize: function setBoardSize(width, height) {
 		this.width = width;
@@ -32,7 +31,24 @@ GameRunner.prototype = {
 		return this;
 	},
 	isStuck: function isStuck() {
-		
+		if (this.game.numPoints == 0) {
+			return true;
+		}
+		if (this.stateStack.length >= 6) {
+			return (
+				(
+					this.stateStack[0] == this.stateStack[2] && 
+					this.stateStack[1] == this.stateStack[3] &&
+					this.stateStack[3] == this.stateStack[5]
+				) ||
+				(
+					this.stateStack[0] == this.stateStack[3] && 
+					this.stateStack[1] == this.stateStack[4] &&
+					this.stateStack[2] == this.stateStack[5]
+				)		
+			);
+		}
+		return false;
 	},
 	_addRandomPoint: function _addRandomPoint() {
 		var x = Math.floor(this.width * Math.random() * 0.8) + Math.floor(this.width * 0.1);
@@ -46,19 +62,22 @@ GameRunner.prototype = {
 		}
 		if (typeof y != 'number') {
 			y = Math.floor(this.height / 2 - shape.size[1] / 2);
-		}
-		shape.points.forEach(function(xy) {
-			this.game.addPoint(x + xy[0], y + xy[1]);
-		}.bind(this));
+		}		
+		GameShapes.add(this.game, name, x, y);
 	},
 	start: function start() {
 		this._startTime = +new Date;
+		this.stateStack = [];
 		this._intervalId = setInterval(function _tickAndDraw() {
 			this.tick++;
 			this.game.tick();
 			this.renderer.draw();
 			if (this.tick % 100 == 0) {
-				this._killOffscreenPoints();
+				this.renderer.killOffscreenPoints();
+			}
+			this.stateStack.push(this.game.serialize());
+			if (this.tick > 6) {
+				this.stateStack.shift();
 			}
 		}.bind(this), this.interval);
 		return this;
@@ -69,13 +88,6 @@ GameRunner.prototype = {
 	},
 	getFps: function getFps() {
 		return Math.floor(1000 / ((+new Date - this._startTime) / this.tick));
-	},
-	_killOffscreenPoints: function _killOffscreenPoints() {
-		this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
-			if (xy[0] < -15 || xy[1] < -15 || xy[0] > this.width + 15 || xy[1] > this.height + 15) {
-				this.game.removePoint(xy[0], xy[1]);
-			}
-		}.bind(this));
 	}
 };
 

@@ -4,6 +4,7 @@ function Game() {
 	this.grid = {};
 	this.min = [0,0];
 	this.max = [0,0];
+	this.numPoints = 0;
 }
 
 Game.prototype = {
@@ -13,22 +14,28 @@ Game.prototype = {
 		else if (y < this.min[1]) this.min[1] = y;
 		else if (y > this.max[1]) this.max[1] = y;
 		this.grid[x+','+y] = 1;
+		this.numPoints++;
 		return this;
 	},
 	isAlive: function isAlive(x,y) {
-		return this.grid[x+','+y] || false;
+		return !!this.grid[x+','+y];
 	},
 	removePoint: function removePoint(x,y) {
+		this.numPoints--;
 		delete this.grid[x+','+y];
 	},
 	tick: function tick() {
 		var newGrid = {};
+		var neighborCache = {};
+		this.numPoints = 0;
 		this.min = [0,0];
 		this.max = [0,0];		
 		this.getPoints().forEach(function _processPoint(xy) {			
 			this._getNeighbors(xy[0],xy[1]).forEach(function _buildGrid(xy) {
 				var x = xy[0], y = xy[1];
-				var cnt = this._neighborShortcount(x, y);
+				var cnt = (typeof neighborCache[x+','+y] == 'number') ?
+					neighborCache[x+','+y] :
+					neighborCache[x+','+y] = this._neighborShortcount(x, y);
 				if (
 					(this.grid[x+','+y] && cnt >= 2 && cnt <= 3)
 					|| (!this.grid[x+','+y] && cnt == 3)
@@ -38,6 +45,7 @@ Game.prototype = {
 					else if (y < this.min[1]) this.min[1] = y;
 					else if (y > this.max[1]) this.max[1] = y;						
 					newGrid[x+','+y] = 1;
+					this.numPoints++;
 				}
 			}.bind(this));
 		}.bind(this));
