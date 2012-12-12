@@ -30,7 +30,8 @@ GameRunner.prototype = {
 		}
 		return this;
 	},
-	isStuck: function isStuck() {
+	// detects if all items are period 2 or 3
+	isStable: function isStable() {
 		if (this.game.numPoints == 0) {
 			return true;
 		}
@@ -66,6 +67,7 @@ GameRunner.prototype = {
 		GameShapes.add(this.game, name, x, y);
 	},
 	start: function start() {
+		this.isRunning = true;
 		this._startTime = +new Date;
 		this.stateStack = [];
 		this._intervalId = setInterval(function _tickAndDraw() {
@@ -83,6 +85,7 @@ GameRunner.prototype = {
 		return this;
 	},
 	stop: function stop() {
+		this.isRunning = false;
 		clearInterval(this._intervalId);
 		return this;
 	},

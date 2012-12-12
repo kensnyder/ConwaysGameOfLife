@@ -18,19 +18,22 @@
 		<script>
 			var runner = new GameRunner({
 				div: document.body,
-				width: Math.floor(document.body.offsetWidth / 7),
-				height: Math.floor(document.body.offsetHeight / 7),
+				width: Math.floor(document.body.offsetWidth / 6),
+				height: Math.floor(document.body.offsetHeight / 6),
 				interval: 0,
-				blockSize: 6,
+				blockSize: 5,
 				drawGrid: true
 			});
 			//runner.addShape('DIEHARD');
 			//runner.addShape('SQUARE', 40, 40);
 			//runner.addShape('SQUARE', 60, 60);
+			runner.addShape('SQUARE');
 			//runner.addShape('FLAT');
 			//runner.addShape('ACORN');
-			runner.seed(0.5);
-			runner.start();
+			//runner.addShape('RPENT');
+			//runner.seed(0.6);
+			runner.renderer.draw();
+			//runner.start();
 			setTimeout(function() {
 				runner.stop();
 				console.log('done!');
