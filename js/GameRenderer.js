@@ -7,22 +7,18 @@ function GameRenderer(game, options) {
 		{width:options.blockSize,height:options.blockSize} : 
 		typeof options.blockSize == 'object' ? options.blockSize : {width:6,height:6};
 	this.div.style.position = 'relative';
-	this.drawGrid = ('drawGrid' in options) ? options.drawGrid : true;
+	this.useGridlines = ('useGridlines' in options) ? options.useGridlines : true;
 	this._drawTimestamps = [];
 	this.reset();
 }
 
 GameRenderer.prototype = {
 	draw: function draw() {
-		this.frameCount++;
-		if (this.frameCount % 50 == 0) {
-			this.killOffscreenPoints();
-		}
 		this._drawTimestamps.push(+new Date);
-		if (this._drawTimestamps.length > 20) {
+		if (this._drawTimestamps.length > 5) {
 			this._drawTimestamps.shift();
 		}
-		this._drawBoard();
+		this.drawBoard();
 		return this;
 	},
 	getFps: function() {
@@ -34,15 +30,15 @@ GameRenderer.prototype = {
 		if (avgMs < 1) {
 			return 0;
 		}
-		return Math.round(1000 / avgMs, 0);
+		return Math.round(1000 / avgMs, 1);
 	},
 	reset: function reset() {
-		this.frameCount = 0;
 		this.div.innerHTML = '';
 		this.grid = this._makeCanvas();
-		this._drawGrid();
-		window.addEventListener('resize', this._drawGrid.bind(this), false);
+		this.drawGrid();
+		window.addEventListener('resize', this.drawGrid.bind(this), false);
 		this.board = this._makeCanvas();
+		window.addEventListener('resize', this.drawBoard.bind(this), false);
 		return this;
 	},
 	_makeCanvas: function _makeCanvas() {
@@ -58,12 +54,13 @@ GameRenderer.prototype = {
 		window.addEventListener('resize', setSize, false);
 		return canvas;
 	},
-	_drawGrid: function _drawGrid() {
+	drawGrid: function drawGrid() {
 		this.boardSize = {
 			x: Math.floor(this.grid.width/this.blockSize.width),
 			y: Math.floor(this.grid.height/this.blockSize.height)
 		};
-		if (!this.drawGrid) {
+		this.grid.ctx.clearRect(0, 0, this.grid.width, this.grid.height);
+		if (!this.useGridlines) {
 			return;
 		}
 		this.grid.ctx.strokeStyle = '#eee';
@@ -84,8 +81,8 @@ GameRenderer.prototype = {
 		}
 		this.grid.ctx.stroke();
 	},
-	_drawBoard: function _drawBoard() {	
-		var gridWidth = this.drawGrid ? 1 : 0;		
+	drawBoard: function drawBoard() {	
+		var gridWidth = this.useGridlines ? 1 : 0;		
 		this.board.ctx.fillStyle = '#000';
 		this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
 		this.game.getPoints().forEach(function _drawPoint(xy) {			
@@ -96,11 +93,19 @@ GameRenderer.prototype = {
 				this.blockSize.height - gridWidth
 			);
 		}.bind(this));
-		this.board.ctx.fillStyle = 'rgb(0,200,100)';
+		this.board.ctx.fillStyle = 'rgb(0,200,60)';
 		this.board.ctx.font = '10pt Arial';
 		this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 16);
-		this.board.ctx.fillText('Size: ' + (this.game.max[0] - this.game.min[0]) + 'x' + (this.game.max[1] - this.game.min[1]) , 6, 28);
-		this.board.ctx.fillText('Tick: ' + this.frameCount, 6, 40);
+		if (
+			this.game.min[0] == Infinity || this.game.min[1] == Infinity ||
+			this.game.max[0] == -Infinity || this.game.max[1] == -Infinity
+		) {	
+			this.board.ctx.fillText('N/A', 6, 28);
+		}
+		else {
+			this.board.ctx.fillText(this.game.min[0] + ',' + this.game.min[1] + ' to ' + this.game.max[0] + ',' + this.game.max[1], 6, 28);
+		}
+		this.board.ctx.fillText('Tick: ' + this.game.generation, 6, 40);
 		this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 52);
 		this.board.ctx.fillText('FPS: ' + this.getFps(), 6, 64);
 	},

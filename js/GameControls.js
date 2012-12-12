@@ -22,12 +22,23 @@ GameControls.prototype = {
 		this.setupGridlinesSelect(this.options.gridlinesSelect);
 		this.setupStartButton(this.options.startButton);
 		this.setupGridClick(this.options.div);
+		this.setupPan();
 		this.options.width = Math.floor(this.options.div.offsetWidth / this.options.blockSize);
 		this.options.height = Math.floor(this.options.div.offsetHeight / this.options.blockSize);
 		this.createGameRunner();
 	},
 	createGameRunner: function() {
 		this.runner = new GameRunner(this.options);
+	},
+	setupPan: function() {
+		window.addEventListener('keyup', function(evt) {
+			var incX = Math.round(this.options.width * 0.05);
+			var incY = Math.round(this.options.height * 0.05);
+			     if (evt.which == 37) this.pan(-incX,0); // left
+			else if (evt.which == 38) this.pan(0,-incY); // up
+			else if (evt.which == 39) this.pan(incX,0);  // right
+			else if (evt.which == 40) this.pan(0,incY);  // down
+		}.bind(this));
 	},
 	setupSeedSelect: function(select) {
 		var idx = 0;
@@ -82,25 +93,27 @@ GameControls.prototype = {
 		select.selectedIndex = 9;
 		this.options.blockSize = 10;
 		select.onchange = function() {
-			this.runner.stop();
 			this.options.seedSelect.selectedIndex = 0;
 			this.options.startButton.value = 'Start';
 			this.options.blockSize = parseInt(select.options[select.selectedIndex].value, 10);
 			this.options.width = Math.floor(this.options.div.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
 			this.options.height = Math.floor(this.options.div.offsetHeight / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
-			this.options.height = Math.floor(this.options.div.offsetHeight / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
-			this.createGameRunner();
+			this.runner.width = this.options.width;
+			this.runner.height = this.options.height;
+			this.runner.renderer.blockSize = {width:this.options.blockSize,height:this.options.blockSize};
+			this.runner.renderer.drawGrid();
+			this.runner.renderer.drawBoard();
+			//this.createGameRunner();
 		}.bind(this);
 	},
 	setupGridlinesSelect: function(select) {
 		select.options[0] = new Option('On', '1');
 		select.options[1] = new Option('Off', '0');
 		select.onchange = function() {
-			this.runner.stop();
-			this.options.seedSelect.selectedIndex = 0;
-			this.options.startButton.value = 'Start';
-			this.options.drawGrid = !select.selectedIndex;
-			this.createGameRunner();
+			this.options.useGridlines = !select.selectedIndex;
+			this.runner.renderer.useGridlines = this.options.useGridlines;
+			this.runner.renderer.drawGrid();
+			this.runner.renderer.drawBoard();
 		}.bind(this);
 	},
 	setupStartButton: function(button) {
@@ -137,6 +150,13 @@ GameControls.prototype = {
 			}
 			this.runner.renderer.draw();
 		}.bind(this);
+	},
+	pan: function(byX, byY) {
+		var newGrid = {};
+		this.runner.game.getPoints().forEach(function(xy) {
+			newGrid[(xy[0]-byX)+','+(xy[1]-byY)] = 1;
+		});
+		this.runner.game.grid = newGrid;
 	}
 };
 

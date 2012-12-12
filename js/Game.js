@@ -2,9 +2,10 @@
 
 function Game() {
 	this.grid = {};
-	this.min = [0,0];
-	this.max = [0,0];
+	this.min = [Infinity,Infinity];
+	this.max = [-Infinity,-Infinity];
 	this.numPoints = 0;
+	this.generation = 0;
 }
 
 Game.prototype = {
@@ -27,6 +28,7 @@ Game.prototype = {
 	tick: function tick() {
 		var newGrid = {};
 		var neighborCache = {};
+		this.generation++;
 		this.numPoints = 0;
 		this.min = [0,0];
 		this.max = [0,0];		

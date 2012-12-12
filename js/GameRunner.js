@@ -14,11 +14,6 @@ GameRunner.prototype = {
 		this.game = new Game();
 		this.renderer = new GameRenderer(this.game, this.options);
 	},
-	setBoardSize: function setBoardSize(width, height) {
-		this.width = width;
-		this.height = height;
-		return this;
-	},
 	setInterval: function setInterval(milliseconds) {
 		this.interval = milliseconds;
 		return this;
@@ -74,9 +69,9 @@ GameRunner.prototype = {
 			this.tick++;
 			this.game.tick();
 			this.renderer.draw();
-			if (this.tick % 100 == 0) {
-				this.renderer.killOffscreenPoints();
-			}
+//			if (this.tick % 100 == 0) {
+//				this.renderer.killOffscreenPoints();
+//			}
 			this.stateStack.push(this.game.serialize());
 			if (this.tick > 6) {
 				this.stateStack.shift();
