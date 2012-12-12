@@ -54,6 +54,7 @@ GameControls.prototype = {
 		// add some from local storage
 		select.selectedIndex = 0;
 		select.onchange = function() {
+			select.blur();
 			this.runner.stop();
 			this.runner.reset();
 			this.options.startButton.value = 'Start';
@@ -77,6 +78,7 @@ GameControls.prototype = {
 		select.selectedIndex = 0;
 		this.options.interval = 0;
 		select.onchange = function() {
+			select.blur();
 			var wasRunning = this.runner.isRunning;
 			this.runner.stop();
 			this.runner.interval = this.options.interval = parseInt(select.options[select.selectedIndex].value, 10);
@@ -93,6 +95,7 @@ GameControls.prototype = {
 		select.selectedIndex = 9;
 		this.options.blockSize = 10;
 		select.onchange = function() {
+			select.blur();
 			this.options.seedSelect.selectedIndex = 0;
 			this.options.startButton.value = 'Start';
 			this.options.blockSize = parseInt(select.options[select.selectedIndex].value, 10);
@@ -103,7 +106,6 @@ GameControls.prototype = {
 			this.runner.renderer.blockSize = {width:this.options.blockSize,height:this.options.blockSize};
 			this.runner.renderer.drawGrid();
 			this.runner.renderer.drawBoard();
-			//this.createGameRunner();
 		}.bind(this);
 	},
 	setupGridlinesSelect: function(select) {
@@ -114,11 +116,13 @@ GameControls.prototype = {
 			this.runner.renderer.useGridlines = this.options.useGridlines;
 			this.runner.renderer.drawGrid();
 			this.runner.renderer.drawBoard();
+			select.blur();
 		}.bind(this);
 	},
 	setupStartButton: function(button) {
 		button.value = 'Start';
 		button.onclick = function() {
+			button.blur();
 			if (this.runner.isRunning) {
 				this.runner.stop();
 				button.value = 'Start';
@@ -136,11 +140,11 @@ GameControls.prototype = {
 		div.onclick = function(evt) {
 			var x = Math.floor(
 				evt.pageX / 
-				(this.options.blockSize + (this.options.gridlines ? 1 : 0))
+				(this.options.blockSize + (this.options.gridlines ? 2 : 1))
 			);
 			var y = Math.floor(
 				(evt.pageY - this.options.controls.offsetHeight) / 
-				(this.options.blockSize + (this.options.gridlines ? 1 : 0))
+				(this.options.blockSize + (this.options.gridlines ? 2 : 1))
 			);
 			if (this.runner.game.isAlive(x,y)) {
 				this.runner.game.removePoint(x,y);
@@ -156,6 +160,8 @@ GameControls.prototype = {
 		this.runner.game.getPoints().forEach(function(xy) {
 			newGrid[(xy[0]-byX)+','+(xy[1]-byY)] = 1;
 		});
+		this.runner.game.min = [Infinity,Infinity];
+		this.runner.game.max = [-Infinity,-Infinity];		
 		this.runner.game.grid = newGrid;
 	}
 };

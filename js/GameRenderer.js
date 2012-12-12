@@ -63,20 +63,20 @@ GameRenderer.prototype = {
 		if (!this.useGridlines) {
 			return;
 		}
-		this.grid.ctx.strokeStyle = '#eee';
+		this.grid.ctx.strokeStyle = '#ddd';
 		this._drawGridLines('width'); // vertical lines	
 		this._drawGridLines('height'); // horizontal lines
 	},
 	_drawGridLines: function _drawGridLines(prop) {
 		this.grid.ctx.beginPath();
-		for (var i = 0; i <= this.grid[prop]; i += this.blockSize[prop]) {
+		for (var i = 0; i <= this.grid[prop]; i += this.blockSize[prop]+1) {
 			if (prop == 'width') { // vertical lines	
-				this.grid.ctx.moveTo(i, 0);
-				this.grid.ctx.lineTo(i, this.grid.height);
+				this.grid.ctx.moveTo(i-0.5, 0);
+				this.grid.ctx.lineTo(i-0.5, this.grid.height);
 			}
 			else if (prop == 'height') { // horizontal lines
-				this.grid.ctx.moveTo(0, i);
-				this.grid.ctx.lineTo(this.grid.width, i);
+				this.grid.ctx.moveTo(0, i-0.5);
+				this.grid.ctx.lineTo(this.grid.width, i-0.5);
 			}		
 		}
 		this.grid.ctx.stroke();
@@ -87,10 +87,10 @@ GameRenderer.prototype = {
 		this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
 		this.game.getPoints().forEach(function _drawPoint(xy) {			
 			this.board.ctx.fillRect(
-				xy[0] * this.blockSize.width + gridWidth,
-				xy[1] * this.blockSize.height + gridWidth,
-				this.blockSize.width - gridWidth,
-				this.blockSize.height - gridWidth
+				xy[0] * (this.blockSize.width + gridWidth),
+				xy[1] * (this.blockSize.height + gridWidth),
+				this.blockSize.width,
+				this.blockSize.height
 			);
 		}.bind(this));
 		this.board.ctx.fillStyle = 'rgb(0,200,60)';
