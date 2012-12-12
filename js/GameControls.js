@@ -1,7 +1,16 @@
 "use strict";
 
-function GameControls(options) {
-	this.options = options || {};
+function GameControls(controls, board) {
+	this.options = {
+		controls: controls,
+		div: board
+	};
+	Array.prototype.slice.call(controls.getElementsByTagName('*')).forEach(function(element) {
+		if (!element.id) {
+			return;
+		}
+		this.options[element.id] = element;
+	}.bind(this));
 	this.setup();
 }
 
@@ -24,13 +33,14 @@ GameControls.prototype = {
 		var idx = 0;
 		select.options[idx++] = new Option('Empty','');
 		for (var pct = 10; pct < 100; pct += 10) {
-			select.options[idx++] = new Option('Seed '+pct+'% full', 'seed-0.'+pct);
+			select.options[idx++] = new Option('Random board - '+pct+'% full', 'seed-0.'+pct);
 		}
 		for (var shape in GameShapes) {
 			if (shape.match(/^[A-Z0-9_]/) && typeof GameShapes[shape] == 'object') {
-				select.options[idx++] = new Option(GameShapes[shape].name, 'addShape-'+shape);
+				select.options[idx++] = new Option('Shape - ' + GameShapes[shape].name, 'addShape-'+shape);
 			}
 		}
+		// add some from local storage
 		select.selectedIndex = 0;
 		select.onchange = function() {
 			this.runner.stop();
@@ -46,11 +56,11 @@ GameControls.prototype = {
 	},
 	setupIntervalSelect: function(select) {
 		select.options[0] = new Option('Max', '0');
-		select.options[1] = new Option('~10fps', '90');
-		select.options[2] = new Option('~5fps', '190');
-		select.options[3] = new Option('~4fps', '240');
-		select.options[4] = new Option('~3fps', '323');
-		select.options[5] = new Option('~2fps', '500');
+		select.options[1] = new Option('~10fps', '95');
+		select.options[2] = new Option('~5fps', '192');
+		select.options[3] = new Option('~4fps', '245');
+		select.options[4] = new Option('~3fps', '328');
+		select.options[5] = new Option('~2fps', '495');
 		select.options[6] = new Option('~1fps', '990');
 		select.options[7] = new Option('~1/2fps', '1990');
 		select.selectedIndex = 0;
@@ -66,13 +76,14 @@ GameControls.prototype = {
 	},
 	setupBlockSizeSelect: function(select) {
 		var idx = 0;
-		for (var hw = 1; hw < 20; hw++) {
+		for (var hw = 1; hw <= 20; hw++) {
 			select.options[idx++] = new Option(hw+'x'+hw, hw);
 		}
 		select.selectedIndex = 9;
 		this.options.blockSize = 10;
 		select.onchange = function() {
 			this.runner.stop();
+			this.options.seedSelect.selectedIndex = 0;
 			this.options.startButton.value = 'Start';
 			this.options.blockSize = parseInt(select.options[select.selectedIndex].value, 10);
 			this.options.width = Math.floor(this.options.div.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
@@ -86,6 +97,7 @@ GameControls.prototype = {
 		select.options[1] = new Option('Off', '0');
 		select.onchange = function() {
 			this.runner.stop();
+			this.options.seedSelect.selectedIndex = 0;
 			this.options.startButton.value = 'Start';
 			this.options.drawGrid = !select.selectedIndex;
 			this.createGameRunner();
@@ -109,9 +121,20 @@ GameControls.prototype = {
 	},
 	setupGridClick: function(div) {
 		div.onclick = function(evt) {
-			var x = Math.floor(evt.pageX / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
-			var y = Math.floor((evt.pageY-28) / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
-			this.runner.game.addPoint(x,y);
+			var x = Math.floor(
+				evt.pageX / 
+				(this.options.blockSize + (this.options.gridlines ? 1 : 0))
+			);
+			var y = Math.floor(
+				(evt.pageY - this.options.controls.offsetHeight) / 
+				(this.options.blockSize + (this.options.gridlines ? 1 : 0))
+			);
+			if (this.runner.game.isAlive(x,y)) {
+				this.runner.game.removePoint(x,y);
+			}
+			else {
+				this.runner.game.addPoint(x,y);
+			}
 			this.runner.renderer.draw();
 		}.bind(this);
 	}

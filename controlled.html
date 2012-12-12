@@ -8,7 +8,7 @@
 		<script src="./js/GameShapes.js"></script>
 		<script src="./js/GameControls.js"></script>
 		<style>
-			html, body, #div {
+			html, body, #board {
 				width: 100%;
 				height: 100%;
 				margin: 0;
@@ -29,15 +29,14 @@
 			Cell Size: <select id="blockSizeSelect"></select> &nbsp; &nbsp;
 			Gridlines: <select id="gridlinesSelect"></select> &nbsp; &nbsp;
 			<input id="startButton" type="button" /> &nbsp; &nbsp;
+			<input id="saveButton" type="button" value="Save State" /> &nbsp; &nbsp;
 		</div>
-		<div id="div"></div>
+		<div id="board"></div>
 		<script>
-			var options = {};
-			['seedSelect','intervalSelect','blockSizeSelect','gridlinesSelect','startButton','div'].forEach(function(id) {
-				options[id] = document.getElementById(id);
-			});
-			console.log(options);
-			var controls = new GameControls(options);
+			var controls = new GameControls(
+				document.getElementById('controls'),
+				document.getElementById('board')
+			);
 //			setTimeout(function() {
 //				runner.stop();
 //				console.log('done!');
