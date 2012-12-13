@@ -15,17 +15,18 @@
 	<body>
 		<script>
 			var game = new Game();
-			GameShapes.add(game, 'DIEHARD', 0, 0);
-			GameShapes.add(game, 'DIEHARD', 15, 15);
-			GameShapes.add(game, 'DIEHARD', 30, 30);
-			GameShapes.add(game, 'DIEHARD', 45, 45);
-			GameShapes.add(game, 'DIEHARD', 60, 60);
 			console.time('diehard');
-			var ticks = 130;
-			while (ticks--) {
-				game.tick();
-			}
-			console.timeEnd('diehard');
+			GameShapes.add(game, 'SIDECAR_HWSS');
+			var ticks = 100;
+			setTimeout(function tickme() {
+				if (ticks-- > 0) {
+					game.tick();
+					setTimeout(tickme,0)
+				}
+				else {
+					console.timeEnd('diehard');
+				}
+			},0);
 		</script>
 	</body>
 </html>
