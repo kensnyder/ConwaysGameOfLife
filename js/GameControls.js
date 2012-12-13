@@ -22,6 +22,7 @@ GameControls.prototype = {
 		this.setupGridlinesSelect(this.options.gridlinesSelect);
 		this.setupStartButton(this.options.startButton);
 		this.setupGridClick(this.options.div);
+		this.setupSaveButton(this.options.saveButton);
 		this.setupPan();
 		this.options.width = Math.floor(this.options.div.offsetWidth / this.options.blockSize);
 		this.options.height = Math.floor(this.options.div.offsetHeight / this.options.blockSize);
@@ -31,7 +32,7 @@ GameControls.prototype = {
 		this.runner = new GameRunner(this.options);
 	},
 	setupPan: function() {
-		window.addEventListener('keyup', function(evt) {
+		document.addEventListener('keyup', function(evt) {
 			var incX = Math.round(this.options.width * 0.05);
 			var incY = Math.round(this.options.height * 0.05);
 			     if (evt.which == 37) this.pan(-incX,0); // left
@@ -46,18 +47,16 @@ GameControls.prototype = {
 		for (var pct = 10; pct < 100; pct += 10) {
 			select.options[idx++] = new Option('Random board - '+pct+'% full', 'seed-0.'+pct);
 		}
-		for (var shape in GameShapes) {
-			if (shape.match(/^[A-Z0-9_]/) && typeof GameShapes[shape] == 'object') {
-				select.options[idx++] = new Option('Shape - ' + GameShapes[shape].name, 'addShape-'+shape);
-			}
-		}
+		GameShapes.library.forEach(function(shape) {
+			select.options[idx++] = new Option('Shape - ' + shape.name, 'addShape-'+shape.code);
+		});
 		// add some from local storage
 		select.selectedIndex = 0;
 		select.onchange = function() {
 			select.blur();
 			this.runner.stop();
 			this.runner.reset();
-			this.options.startButton.value = 'Start';
+			this.options.startButton.value = 'Start \u25B6';
 			var value = select.options[select.selectedIndex].value;
 			if (value) {
 				var parts = value.split('-');
@@ -68,13 +67,13 @@ GameControls.prototype = {
 	},
 	setupIntervalSelect: function(select) {
 		select.options[0] = new Option('Max', '0');
-		select.options[1] = new Option('~10fps', '95');
-		select.options[2] = new Option('~5fps', '192');
-		select.options[3] = new Option('~4fps', '245');
-		select.options[4] = new Option('~3fps', '328');
-		select.options[5] = new Option('~2fps', '495');
-		select.options[6] = new Option('~1fps', '990');
-		select.options[7] = new Option('~1/2fps', '1990');
+		select.options[1] = new Option('~10fps', '99');
+		select.options[2] = new Option('~5fps', '199');
+		select.options[3] = new Option('~4fps', '249');
+		select.options[4] = new Option('~3fps', '332');
+		select.options[5] = new Option('~2fps', '499');
+		select.options[6] = new Option('~1fps', '999');
+		select.options[7] = new Option('~1/2fps', '1999');
 		select.selectedIndex = 0;
 		this.options.interval = 0;
 		select.onchange = function() {
@@ -92,12 +91,10 @@ GameControls.prototype = {
 		for (var hw = 1; hw <= 20; hw++) {
 			select.options[idx++] = new Option(hw+'x'+hw, hw);
 		}
-		select.selectedIndex = 9;
-		this.options.blockSize = 10;
+		select.selectedIndex = 5;
+		this.options.blockSize = 6;
 		select.onchange = function() {
 			select.blur();
-			this.options.seedSelect.selectedIndex = 0;
-			this.options.startButton.value = 'Start';
 			this.options.blockSize = parseInt(select.options[select.selectedIndex].value, 10);
 			this.options.width = Math.floor(this.options.div.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
 			this.options.height = Math.floor(this.options.div.offsetHeight / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
@@ -120,18 +117,18 @@ GameControls.prototype = {
 		}.bind(this);
 	},
 	setupStartButton: function(button) {
-		button.value = 'Start';
+		button.value = 'Start \u25B6';
 		button.onclick = function() {
 			button.blur();
 			if (this.runner.isRunning) {
 				this.runner.stop();
-				button.value = 'Start';
+				button.value = 'Start \u25B6';
 			}
 			else if (this.runner.game.numPoints == 0) {
 				alert('Before starting, please choose a seed pattern or click squares to add cells.');
 			}
 			else {
-				button.value = 'Pause';
+				button.value = 'Pause \u2590\u2590';
 				this.runner.start();
 			}
 		}.bind(this);
@@ -155,13 +152,27 @@ GameControls.prototype = {
 			this.runner.renderer.draw();
 		}.bind(this);
 	},
+	setupSaveButton: function(button) {
+		button.onclick = function() {
+			var points = this.runner.game.getPoints();
+			var minX = Infinity;
+			var minY = Infinity;
+			points.forEach(function(xy) {
+				if (xy[0] < minX) minX = xy[0];
+				else if (xy[1] < minY) minY = xy[1];
+			});
+			var newPoints = [];
+			points.forEach(function(xy) {
+				newPoints.push([xy[0]-minX,xy[1]-minY]);
+			});
+			console.log(JSON.stringify(newPoints));
+		}.bind(this);
+	},
 	pan: function(byX, byY) {
 		var newGrid = {};
 		this.runner.game.getPoints().forEach(function(xy) {
 			newGrid[(xy[0]-byX)+','+(xy[1]-byY)] = 1;
 		});
-		this.runner.game.min = [Infinity,Infinity];
-		this.runner.game.max = [-Infinity,-Infinity];		
 		this.runner.game.grid = newGrid;
 	}
 };

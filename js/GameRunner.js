@@ -47,19 +47,19 @@ GameRunner.prototype = {
 		return false;
 	},
 	_addRandomPoint: function _addRandomPoint() {
-		var x = Math.floor(this.width * Math.random() * 0.8) + Math.floor(this.width * 0.1);
-		var y = Math.floor(this.height * Math.random() * 0.8) + Math.floor(this.height * 0.1);
+		var x = Math.floor(this.width * Math.random() * 0.62) + Math.floor(this.width * 0.125);
+		var y = Math.floor(this.height * Math.random() * 0.62) + Math.floor(this.height * 0.075);
 		this.game.addPoint(x, y);
 	},
 	addShape: function addShape(name, x, y) {
-		var shape = GameShapes[name];
+		var shape = GameShapes.get(name);
 		if (typeof x != 'number') {
-			x = Math.floor(this.width / 2 - shape.size[0] / 2);
+			x = Math.floor(this.width * 0.5 / 2 - shape.size[0] / 2);
 		}
 		if (typeof y != 'number') {
-			y = Math.floor(this.height / 2 - shape.size[1] / 2);
+			y = Math.floor(this.height * 0.5 / 2 - shape.size[1] / 2);
 		}		
-		GameShapes.add(this.game, name, x, y);
+		GameShapes.add(this.game, shape, x, y);
 	},
 	start: function start() {
 		this.isRunning = true;
@@ -83,9 +83,6 @@ GameRunner.prototype = {
 		this.isRunning = false;
 		clearInterval(this._intervalId);
 		return this;
-	},
-	getFps: function getFps() {
-		return Math.floor(1000 / ((+new Date - this._startTime) / this.tick));
 	}
 };
 

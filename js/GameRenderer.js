@@ -9,6 +9,7 @@ function GameRenderer(game, options) {
 	this.div.style.position = 'relative';
 	this.useGridlines = ('useGridlines' in options) ? options.useGridlines : true;
 	this._drawTimestamps = [];
+	this._fps = 0;
 	this.reset();
 }
 
@@ -22,15 +23,18 @@ GameRenderer.prototype = {
 		return this;
 	},
 	getFps: function() {
-		if (this._drawTimestamps.length == 0) {
-			return 0;
-		} 
-		var ms = +new Date - this._drawTimestamps[0];
-		var avgMs = ms / this._drawTimestamps.length;
-		if (avgMs < 1) {
-			return 0;
+		if (!this._fps || (this.game.generation % 5) == 0) {
+			if (this._drawTimestamps.length < 5) {
+				return 0;
+			} 
+			var ms = +new Date - this._drawTimestamps[0];
+			var avgMs = ms / this._drawTimestamps.length;
+			if (avgMs < 1) {
+				return 0;
+			}
+			this._fps = Math.round(1000 / avgMs, 1);
 		}
-		return Math.round(1000 / avgMs, 1);
+		return this._fps || 0;
 	},
 	reset: function reset() {
 		this.div.innerHTML = '';
@@ -96,18 +100,9 @@ GameRenderer.prototype = {
 		this.board.ctx.fillStyle = 'rgb(0,200,60)';
 		this.board.ctx.font = '10pt Arial';
 		this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 16);
-		if (
-			this.game.min[0] == Infinity || this.game.min[1] == Infinity ||
-			this.game.max[0] == -Infinity || this.game.max[1] == -Infinity
-		) {	
-			this.board.ctx.fillText('N/A', 6, 28);
-		}
-		else {
-			this.board.ctx.fillText(this.game.min[0] + ',' + this.game.min[1] + ' to ' + this.game.max[0] + ',' + this.game.max[1], 6, 28);
-		}
-		this.board.ctx.fillText('Tick: ' + this.game.generation, 6, 40);
-		this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 52);
-		this.board.ctx.fillText('FPS: ' + this.getFps(), 6, 64);
+		this.board.ctx.fillText('Tick: ' + this.game.generation, 6, 28);
+		this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 40);
+		this.board.ctx.fillText('FPS: ' + this.getFps() || '-', 6, 52);
 	},
 	killOffscreenPoints: function killOffscreenPoints() {
 		this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
