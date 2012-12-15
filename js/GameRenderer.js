@@ -17,21 +17,21 @@
 	GameRenderer.prototype = {
 		draw: function draw() {
 			this._drawTimestamps.push(+new Date);
-			if (this._drawTimestamps.length > 5) {
+			if (this._drawTimestamps.length > 50) {
 				this._drawTimestamps.shift();
 			}
 			this.drawBoard();
 			return this;
 		},
 		getFps: function() {
-			if (!this._fps || (this.game.generation % 5) == 0) {
-				if (this._drawTimestamps.length < 5) {
+			if (!this._fps || (this.game.generation % 50) == 0) {
+				if (this._drawTimestamps.length < 50) {
 					return 0;
 				} 
 				var ms = +new Date - this._drawTimestamps[0];
 				var avgMs = ms / this._drawTimestamps.length;
 				if (avgMs < 1) {
-					return 0;
+					return 1000;
 				}
 				this._fps = Math.round(1000 / avgMs, 1);
 			}

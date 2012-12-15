@@ -26,21 +26,31 @@
 			var neighborCache = {};
 			this.generation++;
 			this.numPoints = 0;
-			this.getPoints().forEach(function _processPoint(xy) {			
-				this._getNeighbors(xy[0],xy[1]).forEach(function _buildGrid(xy) {
-					var x = xy[0], y = xy[1];
-					var cnt = (typeof neighborCache[x+','+y] == 'number') ?
-						neighborCache[x+','+y] :
-						neighborCache[x+','+y] = this._neighborShortcount(x, y);
+			var xy, x, y, neighbors, n, nxy, nx, ny, cnt, isAlive;
+			var survive = this.rule.survive;
+			var birth = this.rule.birth;
+			for (var point in this.grid) {
+				xy = point.split(',');
+				x = +xy[0];
+				y = +xy[1];
+				neighbors = this._getNeighbors(x,y);
+				for (n = 0; n < 8; n++) {
+					nx = neighbors[n][0];
+					ny = neighbors[n][1];
+					nxy = nx+','+ny;
+					cnt = (typeof neighborCache[nxy] == 'number') ?
+						neighborCache[nxy] :
+						neighborCache[nxy] = this._neighborShortcount(nx, ny);
+					isAlive = this.grid[nxy];
 					if (
-						(this.grid[x+','+y] && this.rule.survive[cnt])
-						|| (!this.grid[x+','+y] && this.rule.birth[cnt])
+						(isAlive && survive[cnt])
+						|| (!isAlive && birth[cnt])
 					) {
-						newGrid[x+','+y] = true;
+						newGrid[nxy] = true;
 						this.numPoints++;
-					}
-				}.bind(this));
-			}.bind(this));
+					}					
+				}
+			}
 			this.grid = newGrid;
 			return this;
 		},

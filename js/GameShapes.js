@@ -65,6 +65,9 @@
 					game.addPoint(x + xy[0], y + xy[1]);
 				});
 			}
+			if (shape.rule) {
+				game.setRuleString(shape.rule);
+			}
 			return this;
 		},
 		seed: function seed(game, ratio, width, height) {
@@ -78,8 +81,30 @@
 		exportGrid: function() {
 			
 		},
+		
+		rules: [
+			{
+				rulestring: '1/1',
+				name: 'Gnarl',
+				descr: 'A simple exploding rule that forms complex patterns from even a single live cell.'
+			}
+		],
 
 		library: [
+			{
+				code: 'C3SHIPS',
+				name: 'C3 Ships',
+				descr: '',
+				size: [58,65],
+				rule: 'B3678/S34678',
+				rle: 'bo$bobo$bbo$bboboo$4boo$oob3o$4boo$bo$4boo$3bobo$3bobo$bboboo$bboobo$\
+				bb3o$3b4o$bb4obo$bob3obo$b6o$3bobo$bboo$4bobo$bb6o$bb6o4$22boo$23bo$\
+				19bo3bo3boo$18boob8o9boo$17b11obo3boob6o13boo$16b13obb11o7bo4b3o$15b\
+				26o10b5obo$16b13obb11o7bo4b3o$17b11obo3boob6o13boo$18boob8o9boo$19bo3b\
+				o3boo$23bo$22boo4$bb6o$bb6o$4bobo$bboo$3bobo$b6o$bob3obo$bb4obo$3b4o$\
+				bb3o$bboobo$bboboo$3bobo$3bobo$4boo$bo$4boo$oob3o$4boo$bboboo$bbo$bobo\
+				$bo'
+			},
 			{
 				code: 'GLIDER',
 				name: 'Glider',
