@@ -146,7 +146,7 @@
 			}.bind(this);
 		},
 		setupGridClick: function(div) {
-			div.onclick = function(evt) {
+			var drawAtCursor = function(evt) {
 				var x = Math.floor(
 					evt.pageX / 
 					(this.options.blockSize + (this.options.gridlines ? 2 : 1))
@@ -155,7 +155,7 @@
 					(evt.pageY - this.options.controls.offsetHeight) / 
 					(this.options.blockSize + (this.options.gridlines ? 2 : 1))
 				);
-				if (this.runner.game.isAlive(x,y)) {
+				if (evt.type == 'click' && this.runner.game.isAlive(x,y)) {
 					this.runner.game.removePoint(x,y);
 				}
 				else {
@@ -163,6 +163,13 @@
 				}
 				this.runner.renderer.draw();
 			}.bind(this);
+			div.onclick = drawAtCursor;
+			div.onmousedown = function() {
+				div.onmousemove = drawAtCursor;
+			};
+			div.onmouseup = function() {
+				div.onmousemove = null;
+			}
 		},
 		setupSaveButton: function(button) {
 			button.onclick = function() {
