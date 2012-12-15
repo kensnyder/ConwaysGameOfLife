@@ -84,10 +84,57 @@
 		
 		rules: [
 			{
+				rulestring: '23/3',
+				name: 'Conway',
+				descr: 'A chaotic rule that is by far the most well-known and well-studied. It exhibits highly complex behavior.',
+				type: 'chaotic'
+			},
+			{
+				rulestring: '23/36',
+				name: 'High Life',
+				descr: 'A chaotic rule very similar to Conway\'s Life that is of interest because it has a simple replicator.',
+				type: 'chaotic',
+				url: 'http://www.conwaylife.com/wiki/HighLife'
+			},
+			{
+				rulestring: '1358/357',
+				name: 'Amoeba',
+				descr: 'A chaotic rule that is well balanced between life and death; it forms patterns with chaotic interiors and wildly moving boundaries.',
+				type: 'chaotic'
+			},
+			{
+				rulestring: '245/368',
+				name: 'Move',
+				descr: 'A rule in which random patterns tend to stabilize extremely quickly. Has a very common slow-moving spaceship and slow-moving puffer.',
+				type: 'stable'
+			},
+			{
 				rulestring: '1/1',
 				name: 'Gnarl',
-				descr: 'A simple exploding rule that forms complex patterns from even a single live cell.'
+				descr: 'A simple exploding rule that forms complex patterns from even a single live cell.',
+				type: 'explosive'
+			},
+			{
+				rulestring: '1357/1357',
+				name: 'Replicator',
+				descr: 'A rule in which every pattern is a replicator.',
+				url: 'http://www.conwaylife.com/wiki/Replicator_(CA)',
+				type: 'explosive'
+			},
+			{
+				rulestring: '02468/1357',
+				name: 'Fredkin',
+				descr: 'A rule in which, like Replicator, every pattern is a replicator.',
+				url: 'http://www.conwaylife.com/wiki/Fredkin',
+				type: 'explosive'
+			},
+			{
+				rulestring: '/2',
+				name: 'Seeds',
+				descr: " An exploding rule in which every cell dies in every generation. It has many simple orthogonal spaceships, though it is in general difficult to create patterns that don't explode.",
+				url: 'http://www.conwaylife.com/wiki/Seeds'
 			}
+			
 		],
 
 		library: [
@@ -111,6 +158,14 @@
 				descr: '5-cell pattern that flies diagonally indefinitely',
 				size: [3,3],
 				points: [[0,1],[2,1],[2,2],[1,2],[2,0]]
+			},
+			{
+				code: 'MOVE_GLIDER',
+				name: 'Move Glider',
+				descr: 'Glider for Move Rulestring',
+				size: [4,4],
+				points: [[2,-1],[2,0],[2,1],[1,1],[0,1],[3,0],[3,1],[2,2],[1,2]],
+				rule: '245/368'
 			},
 			{
 				code: 'LWSS',

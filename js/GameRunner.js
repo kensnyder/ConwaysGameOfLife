@@ -51,11 +51,11 @@
 		_tickAndDraw: function() {
 			this.tick++;
 			this.game.tick();
+			this.renderer.draw();
 			if (this.game.numPoints == 0) {
 				this.stop();
 				alert('All dead');
 			}
-			this.renderer.draw();
 			if (this.tick % 100 == 0) {
 				this.renderer.killOffscreenPoints();
 			}

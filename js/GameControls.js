@@ -21,6 +21,7 @@
 			this.setupIntervalSelect(this.options.intervalSelect);
 			this.setupBlockSizeSelect(this.options.blockSizeSelect);
 			this.setupGridlinesSelect(this.options.gridlinesSelect);
+			this.setupRuleSelect(this.options.ruleSelect);
 			this.setupStartButton(this.options.startButton);
 			this.setupGridClick(this.options.div);
 			this.setupSaveButton(this.options.saveButton);
@@ -58,6 +59,7 @@
 				this.runner.stop();
 				this.runner.reset();
 				this.options.startButton.value = 'Start \u25B6';
+				this.options.ruleSelect.selectedIndex = 0;
 				var value = select.options[select.selectedIndex].value;
 				if (value) {
 					var parts = value.split('-');
@@ -66,15 +68,24 @@
 				this.runner.renderer.draw();
 			}.bind(this);
 		},
+		setupRuleSelect: function(select) {
+			GameShapes.rules.forEach(function(rule, i) {
+				select.options[i] = new Option(rule.rulestring + ' - ' + rule.name, rule.rulestring);
+			});
+			select.selectedIndex = 0;
+			select.onchange = function() {
+				select.blur();
+				this.runner.game.setRuleString(select.options[select.selectedIndex].value);
+			}.bind(this);
+		},
 		setupIntervalSelect: function(select) {
 			select.options[0] = new Option('Max', '0');
-			select.options[1] = new Option('~10fps', '99');
-			select.options[2] = new Option('~5fps', '199');
-			select.options[3] = new Option('~4fps', '249');
-			select.options[4] = new Option('~3fps', '332');
-			select.options[5] = new Option('~2fps', '499');
-			select.options[6] = new Option('~1fps', '999');
-			select.options[7] = new Option('~1/2fps', '1999');
+			select.options[1] = new Option('~20fps', '49');
+			select.options[2] = new Option('~10fps', '99');
+			select.options[3] = new Option('~5fps', '199');
+			select.options[4] = new Option('~2fps', '499');
+			select.options[5] = new Option('~1fps', '999');
+			select.options[6] = new Option('~1/2fps', '1999');
 			select.selectedIndex = 0;
 			this.options.interval = 0;
 			select.onchange = function() {
@@ -175,6 +186,9 @@
 				newGrid[(xy[0]-byX)+','+(xy[1]-byY)] = 1;
 			});
 			this.runner.game.grid = newGrid;
+			if (!this.runner.isRunning) {
+				this.runner.renderer.draw();
+			}
 		}
 	};
 }(typeof exports === 'undefined' ? this : exports));
