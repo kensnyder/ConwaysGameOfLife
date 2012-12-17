@@ -50,7 +50,7 @@
 			for (var pct = 10; pct < 100; pct += 10) {
 				select.options[idx++] = new Option('Random board - '+pct+'% full', 'seed-0.'+pct);
 			}
-			GameShapes.library.forEach(function(shape) {
+			GameShapeLibrary.forEach(function(shape) {
 				select.options[idx++] = new Option('Shape - ' + shape.name, 'addShape-'+shape.code);
 			});
 			// add some from local storage
@@ -60,18 +60,23 @@
 				this.runner.stop();
 				this.runner.reset();
 				this.options.startButton.value = 'Start \u25B6';
-				this.runner.game.setRuleString(this.options.ruleSelect.options[this.options.ruleSelect.selectedIndex].value);
 				var value = select.options[select.selectedIndex].value;
 				if (value) {
 					var parts = value.split('-');
 					this.runner[parts[0]](parts[1]);
+				}
+				for (var i = 0; i < this.options.ruleSelect.options.length; i++) {
+					if (this.options.ruleSelect.options[i].value == this.runner.game.rule.numeric) {
+						this.options.ruleSelect.selectedIndex = i;
+						break;
+					}
 				}
 				this.runner.renderer.draw();
 				select.selectedIndex = 0;
 			}.bind(this);
 		},
 		setupRuleSelect: function(select) {
-			GameShapes.rules.forEach(function(rule, i) {
+			GameRules.forEach(function(rule, i) {
 				select.options[i] = new Option(rule.rule + ' - ' + rule.name, rule.rule);
 			});
 			select.selectedIndex = 0;
@@ -82,12 +87,13 @@
 		},
 		setupIntervalSelect: function(select) {
 			select.options[0] = new Option('Max', '0');
-			select.options[1] = new Option('~20fps', '49');
-			select.options[2] = new Option('~10fps', '99');
-			select.options[3] = new Option('~5fps', '199');
-			select.options[4] = new Option('~2fps', '499');
-			select.options[5] = new Option('~1fps', '999');
-			select.options[6] = new Option('~1/2fps', '1999');
+			select.options[1] = new Option('Very Fast', '39');
+			select.options[2] = new Option('Fast', '99');
+			select.options[3] = new Option('Medium Fast', '199');
+			select.options[4] = new Option('Medium', '332');
+			select.options[5] = new Option('Medium Slow', '449');
+			select.options[6] = new Option('Slow', '999');
+			select.options[7] = new Option('Very Slow', '1999');
 			select.selectedIndex = 0;
 			this.options.interval = 0;
 			select.onchange = function() {
@@ -163,6 +169,7 @@
 			}.bind(this);
 		},
 		setupGridClick: function(div) {
+			this.inMousedown = false;
 			var drawAtCursor = function(evt) {
 				var x = Math.floor(
 					evt.pageX / 
@@ -172,7 +179,7 @@
 					evt.pageY / 
 					(this.options.blockSize + (this.options.gridlines ? 2 : 1))
 				);
-				if (evt.type == 'click' && this.runner.game.isAlive(x,y)) {
+				if (evt.type == 'click' && this.runner.game.isAlive(x,y) && !this.inMousedown) {
 					this.runner.game.removePoint(x,y);
 				}
 				else {
@@ -182,11 +189,13 @@
 			}.bind(this);
 			div.onclick = drawAtCursor;
 			div.onmousedown = function() {
+				setTimeout(function(){this.inMousedown = true}.bind(this),500);
 				div.onmousemove = drawAtCursor;
-			};
+			}.bind(this);
 			div.onmouseup = function() {
+				setTimeout(function(){this.inMousedown = false}.bind(this),500);
 				div.onmousemove = null;
-			}
+			}.bind(this);
 		},
 		setupSaveButton: function(button) {
 			button.onclick = function() {
@@ -206,16 +215,17 @@
 		},
 		setupResetButton: function(button) {
 			button.onclick = function() {
+				this.runner.stop();
 				this.runner.game.reset();
+				this.runner.renderer.draw();
 			}.bind(this);
 		},
 		autoSize: function() {
 			
 		},
 		panRatio: function(byRatio) {
-			var byX = this.runner.renderer.boardSize.x * byRatio;
-			var byY = this.runner.renderer.boardSize.y * byRatio;
-console.log('panRatio: ' + byRatio, byX, byY);			
+			var byX = Math.round(this.runner.renderer.boardSize.x * byRatio,0);
+			var byY = Math.round(this.runner.renderer.boardSize.y * byRatio,0);
 			this.pan(byX, byY);
 		},
 		pan: function(byX, byY) {

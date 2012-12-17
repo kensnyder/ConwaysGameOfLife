@@ -71,7 +71,8 @@
 				birth = match[1];
 				survive = match[0];
 			}
-			this.rule.text = rulestring;
+			this.rule.numeric = survive + '/' + birth;
+			this.rule.bs = 'B' + birth + '/S' + survive;
 			this.rule.max = -1;
 			this.rule.birth = {};
 			this.rule.survive = {};

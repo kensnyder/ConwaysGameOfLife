@@ -1,0 +1,33 @@
+html, body, #board {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	position: relative;
+	overflow: hidden;
+}
+#controls {
+	background-color: #ddd;
+	padding: 3px 8px;
+	position: absolute;
+	opacity: 0.50;
+	-webkit-transition: all 0.33s;
+	-moz-transition: all 0.33s;
+	-ms-transition: all 0.33s;
+	-o-transition: all 0.33s;
+	transition: all 0.33s;
+	top: 0;
+	left: 0;
+	width: 100%;
+	cursor: default;
+}
+#controls:hover {
+	opacity: 1;
+}
+#board {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+body, select, input {
+	font: 14px Arial;
+}

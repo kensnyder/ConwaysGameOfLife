@@ -2,46 +2,14 @@
 <html>
 	<head>
 		<title>Conway's Game of Life</title>
-		<script src="./js/Game.js"></script>
-		<script src="./js/GameRenderer.js"></script>
-		<script src="./js/GameRunner.js"></script>
-		<script src="./js/GameShapes.js"></script>
-		<script src="./js/GameControls.js"></script>
-		<style>
-			html, body, #board {
-				width: 100%;
-				height: 100%;
-				margin: 0;
-				position: relative;
-				overflow: hidden;
-			}
-			#controls {
-				background-color: #ddd;
-				padding: 3px 8px;
-				position: absolute;
-				opacity: 0.50;
-				-webkit-transition: all 0.33s;
-				-moz-transition: all 0.33s;
-				-ms-transition: all 0.33s;
-				-o-transition: all 0.33s;
-				transition: all 0.33s;
-				top: 0;
-				left: 0;
-				width: 100%;
-				cursor: default;
-			}
-			#controls:hover {
-				opacity: 1;
-			}
-			#board {
-				position: absolute;
-				top: 0;
-				left: 0;
-			}
-			body, select, input {
-				font: 14px Arial;
-			}
-		</style>
+		<script src="./assets/js/Game.js"></script>
+		<script src="./assets/js/GameRenderer.js"></script>
+		<script src="./assets/js/GameRunner.js"></script>
+		<script src="./assets/js/GameShapes.js"></script>
+		<script src="./assets/js/GameShapeLibrary.js"></script>
+		<script src="./assets/js/GameRules.js"></script>
+		<script src="./assets/js/GameControls.js"></script>
+		<link rel="stylesheet" href="./assets/css/main.css" />
 	</head>
 	<body>
 		<div id="board"></div>

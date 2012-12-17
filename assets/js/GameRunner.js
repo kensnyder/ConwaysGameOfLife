@@ -42,7 +42,7 @@
 				x = Math.floor(this.renderer.boardSize.x * 0.5 / 2 - shape.size[0] / 2);
 			}
 			if (typeof y != 'number') {
-				y = Math.floor(tthis.renderer.boardSize.y * 0.5 / 2 - shape.size[1] / 2);
+				y = Math.floor(this.renderer.boardSize.y * 0.5 / 2 - shape.size[1] / 2);
 			}		
 			GameShapes.add(this.game, shape, x, y);
 		},
@@ -57,7 +57,7 @@
 			this.game.tick();
 			this.renderer.draw();
 			if (this.game.numPoints == 0) {
-				this.stop();
+				//this.stop();
 			}
 			if (this.tick % 100 == 0) {
 				this.renderer.killOffscreenPoints();
