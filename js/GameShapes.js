@@ -84,55 +84,96 @@
 		
 		rules: [
 			{
-				rulestring: '23/3',
-				name: 'Conway',
-				descr: 'A chaotic rule that is by far the most well-known and well-studied. It exhibits highly complex behavior.',
+				rule: '23/3',
+				name: "Conway's Game of Life",
+				desc: 'A chaotic rule that is by far the most well-known and well-studied. It exhibits highly complex behavior.',
 				type: 'chaotic'
 			},
 			{
-				rulestring: '23/36',
-				name: 'High Life',
-				descr: 'A chaotic rule very similar to Conway\'s Life that is of interest because it has a simple replicator.',
-				type: 'chaotic',
-				url: 'http://www.conwaylife.com/wiki/HighLife'
-			},
-			{
-				rulestring: '1358/357',
-				name: 'Amoeba',
-				descr: 'A chaotic rule that is well balanced between life and death; it forms patterns with chaotic interiors and wildly moving boundaries.',
-				type: 'chaotic'
-			},
-			{
-				rulestring: '245/368',
-				name: 'Move',
-				descr: 'A rule in which random patterns tend to stabilize extremely quickly. Has a very common slow-moving spaceship and slow-moving puffer.',
+				rule: '34678/3678',
+				name: 'Day & Night',
+				desc: 'A stable rule that is symmetric under on-off reversal. Many patterns exhibiting highly complex behavior have been found for it.',
+				link: 'http://www.conwaylife.com/wiki/Day_%26_Night',
 				type: 'stable'
 			},
 			{
-				rulestring: '1/1',
+				rule: '23/36',
+				name: 'High Life',
+				desc: 'A chaotic rule very similar to Conway\'s Life that is of interest because it has a simple replicator.',
+				type: 'chaotic',
+				link: 'http://www.conwaylife.com/wiki/HighLife'
+			},
+			{
+				rule: '1358/357',
+				name: 'Amoeba',
+				desc: 'A chaotic rule that is well balanced between life and death; it forms patterns with chaotic interiors and wildly moving boundaries.',
+				type: 'chaotic'
+			},
+			{
+				rule: '245/368',
+				name: 'Move',
+				desc: 'A rule in which random patterns tend to stabilize extremely quickly. Has a very common slow-moving spaceship and slow-moving puffer.',
+				type: 'stable'
+			},
+			{
+				rule: '12345/3',
+				name: 'Maze',
+				desc: 'An expanding rule that crystalizes to form maze-like designs.',
+				link: 'http://www.conwaylife.com/wiki/Maze',
+				type: 'expanding'
+			},
+			{
+				rule: '012345678/3',
+				name: 'Life without death',
+				desc: 'An expanding rule that produces complex flakes. It also has important ladder patterns.',
+				type: 'expanding'
+			},
+			{
+				rule: '45678/3',
+				name: 'Coral',
+				desc: 'An exploding rule in which patterns grow slowly and form coral-like textures.',
+				type: 'expanding'
+			},
+			{
+				rule: '1/1',
 				name: 'Gnarl',
-				descr: 'A simple exploding rule that forms complex patterns from even a single live cell.',
+				desc: 'A simple exploding rule that forms complex patterns from even a single live cell.',
 				type: 'explosive'
 			},
 			{
-				rulestring: '1357/1357',
+				rule: '1357/1357',
 				name: 'Replicator',
-				descr: 'A rule in which every pattern is a replicator.',
-				url: 'http://www.conwaylife.com/wiki/Replicator_(CA)',
+				desc: 'A rule in which every pattern is a replicator.',
+				link: 'http://www.conwaylife.com/wiki/Replicator_(CA)',
 				type: 'explosive'
 			},
 			{
-				rulestring: '02468/1357',
+				rule: '45678/5678',
+				name: 'Vote',
+				desc: '',
+				link: '',
+				type: ''
+			},
+			{
+				rule: '35678/4678',
+				name: 'Vote 4/5',
+				desc: '',
+				link: '',
+				type: ''
+			},
+			{
+				rule: '02468/1357',
 				name: 'Fredkin',
-				descr: 'A rule in which, like Replicator, every pattern is a replicator.',
-				url: 'http://www.conwaylife.com/wiki/Fredkin',
+				desc: 'A rule in which, like Replicator, every pattern is a replicator.',
+				link: 'http://www.conwaylife.com/wiki/Fredkin',
 				type: 'explosive'
 			},
 			{
-				rulestring: '/2',
+				rule: '/2',
 				name: 'Seeds',
-				descr: " An exploding rule in which every cell dies in every generation. It has many simple orthogonal spaceships, though it is in general difficult to create patterns that don't explode.",
-				url: 'http://www.conwaylife.com/wiki/Seeds'
+				desc: " An exploding rule in which every cell dies in every generation. It has many simple orthogonal spaceships, though it is in general difficult to create patterns that don't explode.",
+				link: 'http://www.conwaylife.com/wiki/Seeds',
+				type: 'explosive'
 			}
 			
 		],
@@ -141,7 +182,7 @@
 			{
 				code: 'C3SHIPS',
 				name: 'C3 Ships',
-				descr: '',
+				desc: '',
 				size: [58,65],
 				rule: 'B3678/S34678',
 				rle: 'bo$bobo$bbo$bboboo$4boo$oob3o$4boo$bo$4boo$3bobo$3bobo$bboboo$bboobo$\
@@ -155,14 +196,28 @@
 			{
 				code: 'GLIDER',
 				name: 'Glider',
-				descr: '5-cell pattern that flies diagonally indefinitely',
+				desc: '5-cell pattern that flies diagonally indefinitely',
 				size: [3,3],
 				points: [[0,1],[2,1],[2,2],[1,2],[2,0]]
 			},
 			{
+				code: 'Bunnies',
+				name: 'Bunnies',
+				desc: 'Stabalizes at 17k generations',
+				size: [8,4],
+				rle: 'o5bob$2bo3bob$2bo2bobo$bobo'
+			},
+			{
+				code: '18METH',
+				name: '18-cell 40514-generation methuselah',
+				desc: 'based on Richard Wobus\' 15-cell marvel',
+				size: [78,54],
+				rle: '77bo$77bo$77bo21$3o20$3bo$3bo$3bo5$20b3o$9b3o10bo$22bo$21bo'
+			},
+			{
 				code: 'MOVE_GLIDER',
 				name: 'Move Glider',
-				descr: 'Glider for Move Rulestring',
+				desc: 'Glider for Move Rulestring',
 				size: [4,4],
 				points: [[2,-1],[2,0],[2,1],[1,1],[0,1],[3,0],[3,1],[2,2],[1,2]],
 				rule: '245/368'
@@ -170,28 +225,28 @@
 			{
 				code: 'LWSS',
 				name: 'Lightweight Spaceship',
-				descr: 'Small spaceship that flies horizontally indefinitely',
+				desc: 'Small spaceship that flies horizontally indefinitely',
 				size: [5,4],
 				points: [[1,0],[2,0],[3,0],[4,0],[4,1],[4,2],[3,3],[0,1],[0,3]]
 			},
 			{
 				code: 'MWSS',
 				name: 'Medium-Weight Spaceship',
-				descr: 'Medium spaceship that flies horizontally indefinitely',
+				desc: 'Medium spaceship that flies horizontally indefinitely',
 				size: [7,5],
 				points: [[2,4],[3,4],[4,4],[5,4],[6,4],[6,3],[6,2],[5,1],[1,3],[0,1],[3,0]]
 			},
 			{
 				code: '8PENTA',
 				name: 'Figure eight on pentadecathlon',
-				descr: 'The smallest known period 120 oscillator',
+				desc: 'The smallest known period 120 oscillator',
 				size: [14,10],
 				rle: 'bo6b2o4b$bo6b2obo2b$obo9bob$bo7bo4b$bo8bob2o$bo10b2o$bo12b$obo11b$bo12b$bo'
 			},
 			{
 				code: 'EATER1',
 				name: 'Eater 1',
-				descr: '',
+				desc: '',
 				size: [7,5],
 				rle: 'bobo97b$4bo96b$o3bo77bo18b$4bo8b5o8b4o10bo9b2o9bo9bo9bobo17b$bo2bo7bo\
 				4bo7bo3bo8bobo9b2o9bo8bobo8bobo17b$2b3o12bo11bo9b2o9b2o9bo7bo2bo9b2o\
@@ -203,7 +258,7 @@
 			{
 				code: 'DINNER_EXT',
 				name: 'Dinner Table Extension',
-				descr: '',
+				desc: '',
 				size: [7,5],
 				rle: '13bo20b$13b3o7b2o9b$16bo6bo10b$9bo5b2o4bobo10b$9b3o9b2o11b$12bo4b3o6b\
 				2o6b$5bo5b2o4b3o6bo7b$5b3o16bobo7b$8bo15b2o8b$bo5b2o4b3o13b2o3b$b3o9b\
@@ -216,7 +271,7 @@
 			{
 				code: 'HWSS',
 				name: 'Heavyweight Spaceship',
-				descr: 'Large spaceship that flies horizontally indefinitely',
+				desc: 'Large spaceship that flies horizontally indefinitely',
 				size: [7,5],
 				points: [[1,4],[2,4],[3,4],[4,4],[5,4],[6,4],[6,3],[6,2],[5,1],[0,3],[2,0],[3,0],[0,1]]
 			},

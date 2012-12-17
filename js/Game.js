@@ -3,9 +3,7 @@
 
 	exports.Game = function(rule) {
 		this.setRuleString(rule || 'B3/S23');
-		this.grid = {};
-		this.numPoints = 0;
-		this.generation = 0;
+		this.reset();
 	}
 
 	exports.Game.prototype = {
@@ -14,12 +12,17 @@
 			this.numPoints++;
 			return this;
 		},
-		isAlive: function isAlive(x,y) {
-			return !!this.grid[x+','+y];
-		},
 		removePoint: function removePoint(x,y) {
 			this.numPoints--;
 			delete this.grid[x+','+y];
+		},
+		reset: function clear(x,y) {
+			this.numPoints = 0;
+			this.grid = {};
+			this.generation = 0;
+		},
+		isAlive: function isAlive(x,y) {
+			return !!this.grid[x+','+y];
 		},
 		tick: function tick() {
 			var newGrid = {};
@@ -38,7 +41,8 @@
 					nx = neighbors[n][0];
 					ny = neighbors[n][1];
 					nxy = nx+','+ny;
-					cnt = (typeof neighborCache[nxy] == 'number') ?
+					// see http://jsperf.com/typeof-vs-in for why we use `!== undefined`
+					cnt = (neighborCache[nxy] !== undefined) ?
 						neighborCache[nxy] :
 						neighborCache[nxy] = this._neighborShortcount(nx, ny);
 					isAlive = this.grid[nxy];
@@ -57,7 +61,7 @@
 		setRuleString: function(rulestring) {
 			var birth, survive;
 			this.rule = {};
-			var match = (/^B(\d+)\/S(\d+)$/).exec(rulestring);
+			var match = (/^B(\d+)\/S(\d+)$/i).exec(rulestring);
 			if (match) {
 				birth = match[1];
 				survive = match[2];
@@ -84,6 +88,7 @@
 				this.rule.survive[digit] = true;
 			}.bind(this));
 		},
+		// TODO: move out
 		getPoints: function getPoints() {
 			var points = [], xy;
 			for (var point in this.grid) {
@@ -92,6 +97,7 @@
 			}
 			return points;
 		},
+		// TODO: move out
 		serialize: function serialize() {
 			return JSON.stringify(this.grid);
 		},

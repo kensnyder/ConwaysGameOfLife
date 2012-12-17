@@ -100,10 +100,10 @@
 			}.bind(this));
 			this.board.ctx.fillStyle = 'rgb(0,200,60)';
 			this.board.ctx.font = '10pt Arial';
-			this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 16);
-			this.board.ctx.fillText('Tick: ' + this.game.generation, 6, 28);
-			this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 40);
-			this.board.ctx.fillText('FPS: ' + this.getFps() || '-', 6, 52);
+			this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 46);
+			this.board.ctx.fillText('Tick: ' + this.game.generation, 6, 58);
+			this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 70);
+			this.board.ctx.fillText('FPS: ' + this.getFps() || '-', 6, 82);
 		},
 		killOffscreenPoints: function killOffscreenPoints() {
 			this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {

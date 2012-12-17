@@ -12,11 +12,31 @@
 				width: 100%;
 				height: 100%;
 				margin: 0;
+				position: relative;
 				overflow: hidden;
 			}
 			#controls {
 				background-color: #ddd;
 				padding: 3px 8px;
+				position: absolute;
+				opacity: 0.50;
+				-webkit-transition: all 0.33s;
+				-moz-transition: all 0.33s;
+				-ms-transition: all 0.33s;
+				-o-transition: all 0.33s;
+				transition: all 0.33s;
+				top: 0;
+				left: 0;
+				width: 100%;
+				cursor: default;
+			}
+			#controls:hover {
+				opacity: 1;
+			}
+			#board {
+				position: absolute;
+				top: 0;
+				left: 0;
 			}
 			body, select, input {
 				font: 14px Arial;
@@ -24,6 +44,7 @@
 		</style>
 	</head>
 	<body>
+		<div id="board"></div>
 		<div id="controls">
 			Rule <select id="ruleSelect"></select> &nbsp; &nbsp;
 			Seed: <select id="seedSelect"></select> &nbsp; &nbsp;
@@ -31,18 +52,14 @@
 			Cell Size: <select id="blockSizeSelect"></select> &nbsp; &nbsp;
 			Gridlines: <select id="gridlinesSelect"></select> &nbsp; &nbsp;
 			<input id="startButton" type="button" /> &nbsp; &nbsp;
+			<input id="resetButton" type="button" value="Reset" /> &nbsp; &nbsp;
 			<input id="saveButton" type="button" value="Save State" /> &nbsp; &nbsp;
 		</div>
-		<div id="board"></div>
 		<script>
 			var controls = new GameControls(
 				document.getElementById('controls'),
 				document.getElementById('board')
 			);
-//			setTimeout(function() {
-//				runner.stop();
-//				console.log('done!');
-//			}, 200000);
 		</script>
 	</body>
 </html>

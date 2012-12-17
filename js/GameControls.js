@@ -25,6 +25,7 @@
 			this.setupStartButton(this.options.startButton);
 			this.setupGridClick(this.options.div);
 			this.setupSaveButton(this.options.saveButton);
+			this.setupResetButton(this.options.resetButton);
 			this.setupPan();
 			this.options.width = Math.floor(this.options.div.offsetWidth / this.options.blockSize);
 			this.options.height = Math.floor(this.options.div.offsetHeight / this.options.blockSize);
@@ -45,7 +46,7 @@
 		},
 		setupSeedSelect: function(select) {
 			var idx = 0;
-			select.options[idx++] = new Option('Empty','');
+			select.options[idx++] = new Option('','');
 			for (var pct = 10; pct < 100; pct += 10) {
 				select.options[idx++] = new Option('Random board - '+pct+'% full', 'seed-0.'+pct);
 			}
@@ -59,18 +60,19 @@
 				this.runner.stop();
 				this.runner.reset();
 				this.options.startButton.value = 'Start \u25B6';
-				this.options.ruleSelect.selectedIndex = 0;
+				this.runner.game.setRuleString(this.options.ruleSelect.options[this.options.ruleSelect.selectedIndex].value);
 				var value = select.options[select.selectedIndex].value;
 				if (value) {
 					var parts = value.split('-');
 					this.runner[parts[0]](parts[1]);
 				}
 				this.runner.renderer.draw();
+				select.selectedIndex = 0;
 			}.bind(this);
 		},
 		setupRuleSelect: function(select) {
 			GameShapes.rules.forEach(function(rule, i) {
-				select.options[i] = new Option(rule.rulestring + ' - ' + rule.name, rule.rulestring);
+				select.options[i] = new Option(rule.rule + ' - ' + rule.name, rule.rule);
 			});
 			select.selectedIndex = 0;
 			select.onchange = function() {
@@ -107,12 +109,19 @@
 			this.options.blockSize = 6;
 			select.onchange = function() {
 				select.blur();
+				var oldBlockSize = this.options.blockSize;
 				this.options.blockSize = parseInt(select.options[select.selectedIndex].value, 10);
 				this.options.width = Math.floor(this.options.div.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
 				this.options.height = Math.floor(this.options.div.offsetHeight / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
 				this.runner.width = this.options.width;
 				this.runner.height = this.options.height;
 				this.runner.renderer.blockSize = {width:this.options.blockSize,height:this.options.blockSize};
+				if (oldBlockSize > this.options.blockSize) {
+					this.panRatio(this.options.blockSize / oldBlockSize * -0.5);
+				}
+				else {
+					this.panRatio(oldBlockSize / this.options.blockSize * 0.25);
+				}
 				this.runner.renderer.drawGrid();
 				this.runner.renderer.drawBoard();
 			}.bind(this);
@@ -120,9 +129,17 @@
 		setupGridlinesSelect: function(select) {
 			select.options[0] = new Option('On', '1');
 			select.options[1] = new Option('Off', '0');
+			this.options.useGridlines = 1;
 			select.onchange = function() {
+				var oldValue = this.options.useGridlines;
 				this.options.useGridlines = !select.selectedIndex;
 				this.runner.renderer.useGridlines = this.options.useGridlines;
+//				if (this.options.useGridlines && !oldValue) {
+//					this.panRatio((this.options.blockSize + 1) / 1);
+//				}
+//				else {
+//					this.panRatio(-0.5 / (this.options.blockSize - 1));
+//				}
 				this.runner.renderer.drawGrid();
 				this.runner.renderer.drawBoard();
 				select.blur();
@@ -152,7 +169,7 @@
 					(this.options.blockSize + (this.options.gridlines ? 2 : 1))
 				);
 				var y = Math.floor(
-					(evt.pageY - this.options.controls.offsetHeight) / 
+					evt.pageY / 
 					(this.options.blockSize + (this.options.gridlines ? 2 : 1))
 				);
 				if (evt.type == 'click' && this.runner.game.isAlive(x,y)) {
@@ -186,6 +203,20 @@
 				});
 				console.log(JSON.stringify(newPoints));
 			}.bind(this);
+		},
+		setupResetButton: function(button) {
+			button.onclick = function() {
+				this.runner.game.reset();
+			}.bind(this);
+		},
+		autoSize: function() {
+			
+		},
+		panRatio: function(byRatio) {
+			var byX = this.runner.renderer.boardSize.x * byRatio;
+			var byY = this.runner.renderer.boardSize.y * byRatio;
+console.log('panRatio: ' + byRatio, byX, byY);			
+			this.pan(byX, byY);
 		},
 		pan: function(byX, byY) {
 			var newGrid = {};
