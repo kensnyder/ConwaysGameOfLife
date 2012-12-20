@@ -13,13 +13,15 @@
 			return this;
 		},
 		removePoint: function removePoint(x,y) {
-			this.numPoints--;
 			delete this.grid[x+','+y];
+			this.numPoints--;
+			return this;
 		},
 		reset: function clear(x,y) {
-			this.numPoints = 0;
 			this.grid = {};
+			this.numPoints = 0;
 			this.generation = 0;
+			return this;
 		},
 		isAlive: function isAlive(x,y) {
 			return !!this.grid[x+','+y];
@@ -45,7 +47,7 @@
 					cnt = (neighborCache[nxy] !== undefined) ?
 						neighborCache[nxy] :
 						neighborCache[nxy] = this._neighborShortcount(nx, ny);
-					isAlive = this.grid[nxy];
+					isAlive = this.grid[nxy] !== undefined;
 					if (
 						(isAlive && survive[cnt])
 						|| (!isAlive && birth[cnt])
@@ -56,7 +58,7 @@
 				}
 			}
 			this.grid = newGrid;
-			return this;
+			return this.generation;
 		},
 		setRuleString: function(rulestring) {
 			var birth, survive;
@@ -78,16 +80,17 @@
 			this.rule.survive = {};
 			birth.split('').forEach(function(digit) {
 				if (digit > this.rule.max) {
-					this.rule.max = parseInt(digit,10);
+					this.rule.max = +digit;
 				}
 				this.rule.birth[digit] = true;
 			}.bind(this));
 			survive.split('').forEach(function(digit) {
 				if (digit > this.rule.max) {
-					this.rule.max = parseInt(digit,10);
+					this.rule.max = +digit;
 				}
 				this.rule.survive[digit] = true;
 			}.bind(this));
+			return this;
 		},
 		// TODO: move out
 		getPoints: function getPoints() {
