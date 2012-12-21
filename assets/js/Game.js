@@ -7,6 +7,12 @@
 	}
 
 	exports.Game.prototype = {
+		reset: function reset() {
+			this.grid = {};
+			this.numPoints = 0;
+			this.generation = 0;
+			return this;
+		},
 		addPoint: function addPoint(x,y) {
 			this.grid[x+','+y] = true;
 			this.numPoints++;
@@ -15,12 +21,6 @@
 		removePoint: function removePoint(x,y) {
 			delete this.grid[x+','+y];
 			this.numPoints--;
-			return this;
-		},
-		reset: function clear(x,y) {
-			this.grid = {};
-			this.numPoints = 0;
-			this.generation = 0;
 			return this;
 		},
 		isAlive: function isAlive(x,y) {
