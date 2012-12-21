@@ -3,14 +3,14 @@
 
 	exports.GameRules = [
 		{
-			rule: "3/23",
+			rule: "23/3",
 			name: "Conway's Game of Life",
 			desc: "The original",
 			type: "chaotic"
 		},
 		{
 			rule: "1357/1357",
-			name: "Replicator",
+			name: "Replicator (explosive)",
 			desc: "A rule in which every pattern is a replicator.",
 			type: "explosive"
 		},
@@ -22,7 +22,7 @@
 		},
 		{
 			rule: "23/37",
-			name: "DryLife",
+			name: "DryLife (explosive)",
 			desc: "An exploding rule closely related to Conway's Life, named after the fact that the standard spaceships bigger than the glider do not function in the rule. Has a small puffer based on the R-pentomino, w",
 			type: "explosive"
 		},
@@ -46,7 +46,7 @@
 		},
 		{
 			rule: "023/3",
-			name: "DotLife",
+			name: "DotLife (explosive)",
 			desc: "An exploding rule closely related to Conway's Life. The B-heptomino is a common infinite growth pattern in this rule, though it can be stabilized into a spaceship.",
 			type: "explosive"
 		},
@@ -58,19 +58,19 @@
 		},
 		{
 			rule: "1/1",
-			name: "Gnarl",
+			name: "Gnarl (explosive)",
 			desc: "A simple exploding rule that forms complex patterns from even a single live cell.",
 			type: "explosive"
 		},
 		{
 			rule: "02468/1357",
-			name: "Fredkin",
+			name: "Fredkin (explosive)",
 			desc: "A rule in which, like Replicator, every pattern is a replicator.",
 			type: "explosive"
 		},
 		{
 			rule: "/2",
-			name: "Seeds",
+			name: "Seeds (explosive)",
 			desc: "An exploding rule in which every cell dies in every generation. It has many simple orthogonal spaceships, though it is in general difficult to create patterns that don't explode.",
 			type: "explosive"
 		},
@@ -81,7 +81,7 @@
 			type: "explosive"
 		},
 		{
-			rule: "/234",
+			rule: "/234 (explosive)",
 			name: "Serviettes",
 			desc: "An exploding rule in which every cell dies every generation (like seeds). This rule is of interest because of the fabric-like beauty of the patterns that it produces.",
 			type: "explosive"
@@ -94,13 +94,13 @@
 		},
 		{
 			rule: "45678/3",
-			name: "Coral",
+			name: "Coral (explosive)",
 			desc: "An exploding rule in which patterns grow slowly and form coral-like textures.",
 			type: "explosive"
 		},
 		{
 			rule: "34/34",
-			name: "34 Life",
+			name: "34 Life (explosive)",
 			desc: "An exploding rule that was initially thought to be a stable alternative to Conway's Life, until computer simulation found that most patterns tend to explode. It has many small oscillators and simple p",
 			type: "explosive"
 		},
@@ -148,7 +148,7 @@
 		},
 		{
 			rule: "235678/378",
-			name: "Coagulations",
+			name: "Coagulations (explosive)",
 			desc: "An exploding rule in which patterns tend to expand forever, producing a thick \"goo\" as it does so.",
 			type: "explosive"
 		},

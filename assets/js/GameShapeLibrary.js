@@ -3,15 +3,16 @@
 
 	exports.GameShapeLibrary = [
 		{
-			code: 'CONWAYJS',
+			id: 'CONWAYJS',
 			name: 'conwayjs',
 			desc: '',
 			size: [58,9],
 			rule: '1234/3',
+			pos: 'middle-center',
 			points: [[1,2],[3,2],[2,2],[0,3],[4,2],[5,2],[5,3],[6,3],[0,4],[0,5],[1,3],[1,4],[1,5],[1,6],[2,6],[3,6],[4,6],[5,6],[5,5],[6,5],[8,3],[8,4],[8,5],[9,6],[9,5],[9,4],[9,3],[9,2],[10,2],[11,2],[12,2],[10,6],[11,6],[13,6],[12,6],[13,2],[13,3],[13,4],[14,3],[14,4],[13,5],[14,5],[16,2],[16,3],[16,4],[16,5],[16,6],[17,2],[17,3],[17,4],[17,5],[17,6],[18,2],[19,2],[20,2],[20,3],[20,4],[20,5],[20,6],[21,6],[21,5],[21,4],[21,3],[23,2],[23,3],[23,4],[23,5],[24,2],[24,3],[24,4],[24,5],[24,6],[25,6],[26,5],[27,6],[28,6],[28,5],[28,4],[28,3],[28,2],[29,2],[29,3],[29,4],[29,5],[31,5],[32,4],[32,5],[32,6],[33,6],[34,6],[35,6],[37,6],[37,5],[37,4],[37,3],[36,2],[36,3],[36,4],[36,5],[36,6],[32,2],[33,2],[34,2],[35,2],[35,4],[34,4],[33,4],[39,2],[39,3],[39,4],[39,5],[40,2],[40,3],[40,4],[40,5],[40,6],[41,6],[42,6],[43,6],[44,6],[45,6],[45,2],[45,3],[45,4],[45,5],[45,7],[44,2],[44,3],[44,4],[40,8],[41,8],[43,8],[44,8],[42,8],[44,7],[44,5],[48,8],[47,8],[49,8],[49,7],[49,6],[49,5],[49,4],[49,3],[49,2],[48,2],[50,2],[50,3],[50,4],[50,5],[50,6],[50,7],[50,0],[49,0],[52,3],[53,3],[53,2],[54,2],[55,2],[56,2],[57,2],[53,4],[54,4],[55,4],[56,4],[57,4],[57,5],[58,5],[53,6],[54,6],[55,6],[56,6],[57,6]]
 		},
 		{
-			code: 'C3SHIPS',
+			id: 'C3SHIPS',
 			name: 'C3 Ships',
 			desc: '',
 			size: [58,65],
@@ -25,169 +26,170 @@
 			$bo'
 		},
 		{
-			code: 'GLIDER',
+			id: 'GLIDER',
 			name: 'Glider',
 			desc: '5-cell pattern that flies diagonally indefinitely',
 			size: [3,3],
+			rule: '23/3',
+			pos: 'top-left',
+			speed: 10,
+			block_size: 5,
 			points: [[0,1],[2,1],[2,2],[1,2],[2,0]]
 		},
 		{
-			code: 'Bunnies',
+			id: 'Bunnies',
 			name: 'Bunnies',
 			desc: 'Stabalizes at 17k generations',
 			size: [8,4],
 			rle: 'o5bob$2bo3bob$2bo2bobo$bobo'
 		},
 		{
-			code: '18METH',
+			id: '18METH',
 			name: '18-cell 40514-generation methuselah',
 			desc: 'based on Richard Wobus\' 15-cell marvel',
 			size: [78,54],
 			rle: '77bo$77bo$77bo21$3o20$3bo$3bo$3bo5$20b3o$9b3o10bo$22bo$21bo'
 		},
 		{
-			code: 'MOVE_GLIDER',
+			id: 'MOVE_GLIDER',
 			name: 'Move Glider',
 			desc: 'Glider for Move Rulestring',
 			size: [4,4],
-			points: [[2,-1],[2,0],[2,1],[1,1],[0,1],[3,0],[3,1],[2,2],[1,2]],
+			pos: 'top-left',
+			speed: 10,
+			block_size: 8,
+			points: [[0,1],[1,1],[0,0],[0,2],[1,0],[2,0]],
 			rule: '245/368'
 		},
 		{
-			code: 'LWSS',
+			id: 'LWSS',
 			name: 'Lightweight Spaceship',
 			desc: 'Small spaceship that flies horizontally indefinitely',
 			size: [5,4],
+			pos: 'middle-left',
+			speed: 25,
+			block_size: 12,
 			points: [[1,0],[2,0],[3,0],[4,0],[4,1],[4,2],[3,3],[0,1],[0,3]]
 		},
 		{
-			code: 'MWSS',
+			id: 'MWSS',
 			name: 'Medium-Weight Spaceship',
 			desc: 'Medium spaceship that flies horizontally indefinitely',
 			size: [7,5],
+			pos: 'middle-left',
+			block_size: 12,
 			points: [[2,4],[3,4],[4,4],[5,4],[6,4],[6,3],[6,2],[5,1],[1,3],[0,1],[3,0]]
 		},
 		{
-			code: '8PENTA',
-			name: 'Figure eight on pentadecathlon',
-			desc: 'The smallest known period 120 oscillator',
-			size: [14,10],
-			rle: 'bo6b2o4b$bo6b2obo2b$obo9bob$bo7bo4b$bo8bob2o$bo10b2o$bo12b$obo11b$bo12b$bo'
-		},
-		{
-			code: 'EATER1',
-			name: 'Eater 1',
-			desc: '',
-			size: [7,5],
-			rle: 'bobo97b$4bo96b$o3bo77bo18b$4bo8b5o8b4o10bo9b2o9bo9bo9bobo17b$bo2bo7bo\
-			4bo7bo3bo8bobo9b2o9bo8bobo8bobo17b$2b3o12bo11bo9b2o9b2o9bo7bo2bo9b2o\
-			17b$6b2o4bo3bo2b2o4bo2bo2b2o9b2o9b2o8b2o5b2o2b2o9b2o7b2o5b$bo4bobo5bo\
-			4bobo9bobo8bobo8bobo7bobo8bobo8bobo6bobo4b$obo5bo12bo11bo10bo10bo9bo\
-			10bo10bo8bo4b$bo6b2o11b2o10b2o9b2o9b2o8b2o9b2o9b2o7b2o2bo$99b2o$99bob$\
-			99bob$100bo$100bo'
-		},
-		{
-			code: 'DINNER_EXT',
-			name: 'Dinner Table Extension',
-			desc: '',
-			size: [7,5],
-			rle: '13bo20b$13b3o7b2o9b$16bo6bo10b$9bo5b2o4bobo10b$9b3o9b2o11b$12bo4b3o6b\
-			2o6b$5bo5b2o4b3o6bo7b$5b3o16bobo7b$8bo15b2o8b$bo5b2o4b3o13b2o3b$b3o9b\
-			3o4b3o6bo4b$4bo4b3o8b3o4bobo4b$3b2o4b3o4b3o8b2o5b$16b3o4b3o6b2o$23b3o\
-			6bob$5b3o22bobob$5b3o4b3o15b2o2b$2b2o8b3o4b3o12b$bobo4b3o8b3o4b3o5b$bo\
-			6b3o4b3o8b3o5b$2o13b3o4b3o9b$5b2o15b3o4b2o3b$4bobo22bo4b$4bo6b3o16b3ob\
-			$3b2o6b3o4b3o4b2o5bob$8b2o8b3o4bo8b$7bobo4b3o9b3o5b$7bo6b3o4b2o5bo5b$\
-			6b2o13bo12b$11b2o9b3o9b$10bobo4b2o5bo9b$10bo6bo16b$9b2o7b3o13b$20bo'
-		},
-		{
-			code: 'HWSS',
+			id: 'HWSS',
 			name: 'Heavyweight Spaceship',
 			desc: 'Large spaceship that flies horizontally indefinitely',
 			size: [7,5],
+			pos: 'middle-left',
+			speed: 25,
+			block_size: 12,
 			points: [[1,4],[2,4],[3,4],[4,4],[5,4],[6,4],[6,3],[6,2],[5,1],[0,3],[2,0],[3,0],[0,1]]
 		},
 		{
-			code: 'PUFF_TRAIN',
+			id: 'PUFF_TRAIN',
 			name: 'Puff Train',
 			size: [5,18],
+			pos: 'middle-left',
+			speed: 25,
+			block_size: 5,
 			points: [[1,3],[0,2],[2,3],[3,0],[3,3],[4,2],[4,3],[4,1],[0,7],[1,8],[2,8],[2,9],[2,10],[1,11],[3,14],[4,15],[4,16],[4,17],[3,17],[1,17],[2,17],[0,16]]
 		},
 		{
-			code: 'PULSAR',
+			id: 'PULSAR',
 			name: 'Pulsar Oscilator',
 			size: [13,13],
+			block_size: 20,
+			speed: 2,
 			points: [[5,4],[5,3],[5,2],[4,5],[2,5],[3,5],[7,4],[7,2],[7,3],[8,5],[9,5],[10,5],[10,7],[9,7],[8,7],[7,8],[7,9],[7,10],[5,8],[5,9],[5,10],[4,7],[3,7],[2,7],[0,8],[0,9],[0,10],[2,12],[3,12],[4,12],[8,12],[9,12],[10,12],[12,10],[12,9],[12,8],[12,3],[12,2],[12,4],[10,0],[9,0],[3,0],[2,0],[4,0],[0,4],[0,3],[0,2],[8,0]]
 		},
 		{
-			code: 'RPENT',
+			id: 'RPENT',
 			name: 'R-pentomino',
 			size: [3,3],
 			points: [[1,0],[2,0],[0,1],[1,1],[1,2]]
 		},
 		{
-			code: 'DIEHARD',
+			id: 'DIEHARD',
 			name: 'Diehard',
 			size: [8,3],
 			points: [[6,0],[0,1],[1,1],[1,2],[5,2],[6,2],[7,2]]
 		},
 		{
-			code: 'ACORN',
+			id: 'ACORN',
 			name: 'Acorn',
 			size: [8,3],
 			points: [[1,0],[4,1],[0,2],[1,2],[5,2],[6,2],[7,2]]
 		},
 		{
-			code: 'SQUARE',
+			id: 'SQUARE',
 			name: '5x5 Square',
 			size: [5,5],
 			points: [[0,0],[1,0],[2,0],[4,0],[0,1],[3,2],[4,2],[1,3],[2,3],[4,3],[0,4],[2,4],[4,4]]
 		},
 		{
-			code: 'BLOCK_LAYER',
+			id: 'BLOCK_LAYER',
 			name: 'Block-Laying Switch Engine',
 			size: [8,7],
+			block_size: 4,
+			pos: 'bottom-right',
 			points: [[0,5],[2,5],[2,4],[4,3],[4,2],[4,1],[6,2],[6,0],[6,1],[7,1]]
 		},
 		{
-			code: 'FLAT',
+			id: 'FLAT',
 			name: 'Double Block Laying Switch Engine',
 			size: [39,1],
+			pos: 'middle-left',
+			block_size: 1,
+			grid: false,
+			rule: '23/3',
 			points: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[9,0],[10,0],[11,0],[12,0],[13,0],[17,0],[18,0],[19,0],[26,0],[27,0],[28,0],[29,0],[30,0],[31,0],[32,0],[34,0],[35,0],[36,0],[37,0],[38,0]]
 		},
 		{
-			code: 'SHICK',
+			id: 'SHICK',
 			name: 'Schick Engine',
 			size: [9,9],
+			block_size: 8,
+			pos: 'middle-right',
+			speed: 10,
 			points: [[0,0],[1,0],[2,0],[3,0],[0,1],[0,2],[4,1],[1,3],[4,3],[7,3],[8,3],[8,4],[7,4],[6,4],[7,5],[8,5],[4,5],[1,5],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,7]]
 		},
 		{
-			code: 'GOSPER',
+			id: 'GOSPER',
 			name: 'Gosper Glider Gun',
 			size: [36,9],
+			block_size: 8,
+			pos: 'top-left',
 			points: [[0,4],[0,5],[1,5],[1,4],[10,4],[10,5],[10,6],[11,3],[12,2],[11,7],[12,8],[13,8],[13,2],[14,5],[16,6],[16,5],[16,4],[15,3],[15,7],[17,5],[20,4],[20,3],[20,2],[21,2],[21,3],[21,4],[22,1],[22,5],[24,1],[24,0],[24,5],[24,6],[34,2],[35,2],[35,3],[34,3]]
 		},
 		{
-			code: 'QSHUTTLE',
+			id: 'QSHUTTLE',
 			name: 'Queen Bee Shuttle',
 			size: [4,7],
 			points: [[0,0],[1,0],[2,1],[3,2],[3,3],[3,4],[2,5],[1,6],[0,6]]
 		},
 		{
-			code: 'PENTADECATHLON',
+			id: 'PENTADECATHLON',
 			name: 'Pentadecathlon Oscilator',
 			size: [10,1],
 			points: [[0,0],[1,0],[2,0],[3,0],[4,0],[6,0],[5,0],[7,0],[8,0],[9,0]]
 		},
 		{
-			code: 'P200_ROCKET_GUN',
+			id: 'P200_ROCKET_GUN',
 			name: 'Period 200 Rocket Gun',
 			size: [17,33],
 			rule: '34678/3678',
+			pos: 'middle-left',
+			block_size: 5,
 			rle: '5b3obb3o$3b12o$b16o$b16o$3bo10bo$4b10o8$oob3o$7o$b7o$9o$b7o$7o$oob3o8$4b10o$3bo10bo$b16o$b16o$3b12o$5b3obb3o'
 		},
 		{
-			code: 'P432_GLIDER_GUN',
-			name: 'Period 432 Rocket Gun',
+			id: 'P432_GLIDER_GUN',
+			name: 'Period 432 Glider Gun',
 			size: [113,78],
 			rle: '75boo8boo24boo$74b4o7boo24boo$73bobobbo24boo$73boobbobo22bobbo$78bobo\
 			18boobboo$80boo16b3o$51boo15boo9b3o16bobbo$51boo15boo8bobo16boobo$78b\
@@ -201,10 +203,13 @@
 			bboo12bobo$17bobbo12bobobboo$18boo14bobbobo$oo24boo7b4o$oo24boo8boo'
 		},
 		{
-			code: 'ROCKET_LOBE_ROCKET',
+			id: 'ROCKET_LOBE_ROCKET',
 			name: 'Rocket - Lobe - Rocket',
 			size: [66,52],
 			rule: '34678/3678',
+			pos: 'bottom-right',
+			speed: 25,
+			block_size: 4,
 			rle: '4booboo36bo$3b6o6bo12boo14b3o$bbob4obo3b5o5boob6o13bo$b8obb7o3b11o13bo\
 			$31o$b8obb7o3b11o13bo$bbob4obo3b5o5boob6o13bo$3b6o6bo12boo14b3o$4boob\
 			oo36bo3$45bo$44b3o$43b5o$42b7o$41b9o$43b5o$44b3o$43b5o$44b3o$44b3o$43b\
@@ -214,9 +219,10 @@
 			5o$41b9o$42b7o$43b5o$44b3o$45bo'
 		},
 		{
-			code: 'SIDECAR_HWSS',
+			id: 'SIDECAR_HWSS',
 			name: 'Sidecar on HWSS',
 			size: [235,142],
+			block_size: 3,
 			rle: '29bo$29bobo$12bo17bobo$12boo16bobbo3boo148bo$7boo4boo15bobo4boo147b4o$\
 			3boobboo4b3o13bobo153boob4o5boo$3boobboo4boo7bobo4bo144boo8b3oboo3bo3b\
 			obbo$12boo9boo149boo9booboo3bo7bo$12bo10bo162b5o3bo6bo6boo$187bo3b3o7b\

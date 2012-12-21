@@ -3,11 +3,11 @@
 
 	exports.GameRenderer = function(game, options) {
 		this.game = game;
-		this.div = options.div;
+		this.container = options.board;
 		this.blockSize = typeof options.blockSize == 'number' ? 
 			{width:options.blockSize,height:options.blockSize} : 
 			typeof options.blockSize == 'object' ? options.blockSize : {width:6,height:6};
-		this.div.style.position = 'relative';
+		this.container.style.position = 'relative';
 		this.useGridlines = ('useGridlines' in options) ? options.useGridlines : true;
 		this._drawTimestamps = [];
 		this._fps = 0;
@@ -23,7 +23,7 @@
 			this.drawBoard();
 			return this;
 		},
-		getFps: function() {
+		getFps: function getFps() {
 			if (!this._fps || (this.game.generation % 50) == 0) {
 				if (this._drawTimestamps.length < 50) {
 					return 0;
@@ -38,7 +38,7 @@
 			return this._fps || 0;
 		},
 		reset: function reset() {
-			this.div.innerHTML = '';
+			this.container.innerHTML = '';
 			this.grid = this._makeCanvas();
 			this.drawGrid();
 			window.addEventListener('resize', this.drawGrid.bind(this), false);
@@ -50,19 +50,19 @@
 			var canvas = document.createElement('canvas');
 			canvas.style.position = 'absolute';
 			canvas.ctx = canvas.getContext('2d');
-			this.div.appendChild(canvas);
+			this.container.appendChild(canvas);
 			var setSize = function() {
-				canvas.height = this.div.offsetHeight;
-				canvas.width = this.div.offsetWidth;
+				canvas.height = this.container.offsetHeight;
+				canvas.width = this.container.offsetWidth;
 			}.bind(this);
-			setSize();
 			window.addEventListener('resize', setSize, false);
+			setSize();
 			return canvas;
 		},
 		drawGrid: function drawGrid() {
 			this.boardSize = {
-				x: Math.floor(this.grid.width/this.blockSize.width),
-				y: Math.floor(this.grid.height/this.blockSize.height)
+				x: Math.floor(this.grid.width / (this.blockSize.width + (this.useGridlines ? 1 : 0))),
+				y: Math.floor(this.grid.height / (this.blockSize.height + (this.useGridlines ? 1 : 0)))
 			};
 			this.grid.ctx.clearRect(0, 0, this.grid.width, this.grid.height);
 			if (!this.useGridlines) {
