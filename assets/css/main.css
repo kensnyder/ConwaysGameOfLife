@@ -18,7 +18,9 @@ html, body, #board {
 	top: 0;
 	left: 0;
 	width: 100%;
+	height: 20px;
 	cursor: default;
+	overflow: hidden;
 }
 #controls:hover {
 	opacity: 1;

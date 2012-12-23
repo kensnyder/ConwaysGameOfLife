@@ -152,8 +152,11 @@
 		_setupBlockSizeSelect: function() {
 			var select = this.elements.blockSizeSelect;
 			var idx = 0;
+			select.options[idx++] = new Option('1/4','0.25');
+			select.options[idx++] = new Option('1/3','0.333333333333');
+			select.options[idx++] = new Option('1/2','0.5');
 			for (var hw = 1; hw <= 20; hw++) {
-				select.options[idx++] = new Option(hw+'x'+hw, hw);
+				select.options[idx++] = new Option(hw, hw);
 			}
 			select.onchange = this._handleBlockSizeSelect.bind(this);
 			this.setBlockSize(6);
@@ -164,6 +167,8 @@
 			this.setBlockSize(select.options[select.selectedIndex].value);
 		},
 		setBlockSize: function(size) {
+console.log(size, this.renderer.blockSize.width, size / this.renderer.blockSize.width)			
+			this.panRatio(size / this.renderer.blockSize.width);
 //			var oldBlockSize = this.options.blockSize;
 //			this.options.blockSize = +size;
 //			this.options.width = Math.floor(this.elements.board.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
@@ -182,8 +187,7 @@
 				width: +size,
 				height: +size
 			};
-			this.renderer.drawGrid();
-			this.renderer.drawBoard();
+			this.renderer.clear();
 			setSelectValue(this.elements.blockSizeSelect, size);
 		},
 		_setupGridlinesSelect: function() {
@@ -309,6 +313,8 @@
 		reset: function() {
 			this.stop();
 			this.game.reset();
+			this.renderer.visitedPoints = {};
+			this.renderer.drawVisitedBoard();
 			this.renderer.draw();
 		},
 		autoSize: function() {
@@ -320,14 +326,20 @@
 			this.pan(byX, byY);
 		},
 		pan: function(byX, byY) {
-			var newGrid = {};
-			this.game.getPoints().forEach(function(xy) {
+			var newGrid = {}, xy;
+			for (var point in this.game.grid) {
+				xy = point.split(',');
 				newGrid[(xy[0]-byX)+','+(xy[1]-byY)] = 1;
-			});
-			this.game.grid = newGrid;
-			if (!this.isRunning) {
-				this.renderer.draw();
 			}
+			this.game.grid = newGrid;
+			var newVisited = {};
+			for (point in this.renderer.visitedPoints) {
+				xy = point.split(',');
+				newVisited[(xy[0]-byX)+','+(xy[1]-byY)] = true;
+			}
+			this.renderer.visitedPoints = newVisited;
+			this.renderer.drawVisitedBoard();
+			this.renderer.draw();
 		}
 	};
 	

@@ -11,7 +11,7 @@
 		this.useGridlines = ('useGridlines' in options) ? options.useGridlines : true;
 		this._drawTimestamps = [];
 		this._fps = 0;
-		this.reset();
+		this.setup();
 	}
 
 	GameRenderer.prototype = {
@@ -37,14 +37,26 @@
 			}
 			return this._fps || 0;
 		},
-		reset: function reset() {
+		setup: function setup() {
 			this.container.innerHTML = '';
+			// grid canvas
 			this.grid = this._makeCanvas();
 			this.drawGrid();
 			window.addEventListener('resize', this.drawGrid.bind(this), false);
+			// visited canvas
+			this.visitedBoard = this._makeCanvas();
+			this.visitedPoints = {};
+			window.addEventListener('resize', this.drawVisitedBoard.bind(this), false);
+			// board canvas
 			this.board = this._makeCanvas();
 			window.addEventListener('resize', this.drawBoard.bind(this), false);
 			return this;
+		},
+		clear: function clear() {
+			this.drawGrid();
+			this.visitedPoints = {};
+			this.drawVisitedBoard();
+			this.drawBoard();			
 		},
 		_makeCanvas: function _makeCanvas() {
 			var canvas = document.createElement('canvas');
@@ -68,7 +80,8 @@
 			if (!this.useGridlines) {
 				return;
 			}
-			this.grid.ctx.strokeStyle = '#ddd';
+			this.grid.ctx.strokeStyle = '#c0c0c0';
+			this.grid.ctx.strokeStyle = '#ffffff';
 			this._drawGridLines('width'); // vertical lines	
 			this._drawGridLines('height'); // horizontal lines
 		},
@@ -86,18 +99,47 @@
 			}
 			this.grid.ctx.stroke();
 		},
-		drawBoard: function drawBoard() {	
-			var gridWidth = this.useGridlines ? 1 : 0;		
-			this.board.ctx.fillStyle = '#000';
-			this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
-			this.game.getPoints().forEach(function _drawPoint(xy) {			
-				this.board.ctx.fillRect(
-					xy[0] * (this.blockSize.width + gridWidth),
-					xy[1] * (this.blockSize.height + gridWidth),
+		drawVisitedBoard: function drawVisitedBoard() {
+			this.visitedBoard.ctx.fillStyle = '#d4d4d4';
+			this.visitedBoard.ctx.clearRect(0, 0, this.visitedBoard.width, this.visitedBoard.height);
+			var w = this.blockSize.width + (this.useGridlines ? 1 : 0);
+			var h = this.blockSize.height + (this.useGridlines ? 1 : 0);
+			var xy;
+			for (var point in this.visitedPoints) {
+				xy = point.split(',');
+				this.visitedBoard.ctx.fillRect(
+					xy[0] * w,
+					xy[1] * h,
 					this.blockSize.width,
 					this.blockSize.height
 				);
-			}.bind(this));
+			}				
+		},
+		drawBoard: function drawBoard() {	
+			this.board.ctx.fillStyle = '#000';
+			this.visitedBoard.ctx.fillStyle = '#d4d4d4';
+			this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
+			var xy;
+			var w = this.blockSize.width + (this.useGridlines ? 1 : 0);
+			var h = this.blockSize.height + (this.useGridlines ? 1 : 0);
+			for (var point in this.game.grid) {
+				xy = point.split(',');
+				if (this.visitedPoints[point] === undefined) {
+					this.visitedPoints[point] = true; 
+					this.visitedBoard.ctx.fillRect(
+						xy[0] * w,
+						xy[1] * h,
+						this.blockSize.width,
+						this.blockSize.height
+					);
+				}
+				this.board.ctx.fillRect(
+					xy[0] * w,
+					xy[1] * h,
+					this.blockSize.width,
+					this.blockSize.height
+				);
+			}
 			this.board.ctx.fillStyle = 'rgb(0,200,60)';
 			this.board.ctx.font = '10pt Arial';
 			this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 46);
