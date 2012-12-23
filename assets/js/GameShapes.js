@@ -20,15 +20,19 @@
 				return false;
 			}
 			shape.pos = shape.pos || 'middle-center';
-			shape.block_size = shape.block_size || 6;
-			shape.grid = shape.grid === undefined ? 1 : !!shape.grid;
+			shape.zoom = shape.zoom || 6;
 			shape.speed = shape.speed === undefined ? 0 : shape.speed;
 			shape.rule = shape.rule || '23/3';
 			controls.setRule(shape.rule);
 			controls.setSpeed(shape.speed);
-			shape.grid ? controls.enableGridlines() : controls.disableGridlines();
-			if (shape.block_size) {
-				controls.setBlockSize(shape.block_size);
+			if (shape.zoom > 2) {
+				controls.enableGridlines();
+			}
+			else {
+				controls.disableGridlines();
+			}
+			if (shape.zoom) {
+				controls.setBlockSize(shape.zoom);
 			}			
 			var points = this.getPoints(shape);
 			var x = this.getStartX(controls, shape);

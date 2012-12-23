@@ -33,7 +33,7 @@
 			rule: '23/3',
 			pos: 'top-left',
 			speed: 10,
-			block_size: 5,
+			zoom: 5,
 			points: [[0,1],[2,1],[2,2],[1,2],[2,0]]
 		},
 		{
@@ -57,7 +57,7 @@
 			size: [4,4],
 			pos: 'top-left',
 			speed: 10,
-			block_size: 8,
+			zoom: 8,
 			points: [[0,1],[1,1],[0,0],[0,2],[1,0],[2,0]],
 			rule: '245/368'
 		},
@@ -68,7 +68,7 @@
 			size: [5,4],
 			pos: 'middle-left',
 			speed: 25,
-			block_size: 12,
+			zoom: 12,
 			points: [[1,0],[2,0],[3,0],[4,0],[4,1],[4,2],[3,3],[0,1],[0,3]]
 		},
 		{
@@ -77,7 +77,7 @@
 			desc: 'Medium spaceship that flies horizontally indefinitely',
 			size: [7,5],
 			pos: 'middle-left',
-			block_size: 12,
+			zoom: 12,
 			points: [[2,4],[3,4],[4,4],[5,4],[6,4],[6,3],[6,2],[5,1],[1,3],[0,1],[3,0]]
 		},
 		{
@@ -87,7 +87,7 @@
 			size: [7,5],
 			pos: 'middle-left',
 			speed: 25,
-			block_size: 12,
+			zoom: 12,
 			points: [[1,4],[2,4],[3,4],[4,4],[5,4],[6,4],[6,3],[6,2],[5,1],[0,3],[2,0],[3,0],[0,1]]
 		},
 		{
@@ -96,14 +96,14 @@
 			size: [5,18],
 			pos: 'middle-left',
 			speed: 25,
-			block_size: 5,
+			zoom: 5,
 			points: [[1,3],[0,2],[2,3],[3,0],[3,3],[4,2],[4,3],[4,1],[0,7],[1,8],[2,8],[2,9],[2,10],[1,11],[3,14],[4,15],[4,16],[4,17],[3,17],[1,17],[2,17],[0,16]]
 		},
 		{
 			id: 'PULSAR',
 			name: 'Pulsar Oscilator',
 			size: [13,13],
-			block_size: 20,
+			zoom: 20,
 			speed: 2,
 			points: [[5,4],[5,3],[5,2],[4,5],[2,5],[3,5],[7,4],[7,2],[7,3],[8,5],[9,5],[10,5],[10,7],[9,7],[8,7],[7,8],[7,9],[7,10],[5,8],[5,9],[5,10],[4,7],[3,7],[2,7],[0,8],[0,9],[0,10],[2,12],[3,12],[4,12],[8,12],[9,12],[10,12],[12,10],[12,9],[12,8],[12,3],[12,2],[12,4],[10,0],[9,0],[3,0],[2,0],[4,0],[0,4],[0,3],[0,2],[8,0]]
 		},
@@ -135,7 +135,7 @@
 			id: 'BLOCK_LAYER',
 			name: 'Block-Laying Switch Engine',
 			size: [8,7],
-			block_size: 4,
+			zoom: 4,
 			pos: 'bottom-right',
 			points: [[0,5],[2,5],[2,4],[4,3],[4,2],[4,1],[6,2],[6,0],[6,1],[7,1]]
 		},
@@ -144,7 +144,7 @@
 			name: 'Double Block Laying Switch Engine',
 			size: [39,1],
 			pos: 'middle-left',
-			block_size: 1,
+			zoom: 1,
 			grid: false,
 			rule: '23/3',
 			points: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[9,0],[10,0],[11,0],[12,0],[13,0],[17,0],[18,0],[19,0],[26,0],[27,0],[28,0],[29,0],[30,0],[31,0],[32,0],[34,0],[35,0],[36,0],[37,0],[38,0]]
@@ -153,7 +153,7 @@
 			id: 'SHICK',
 			name: 'Schick Engine',
 			size: [9,9],
-			block_size: 8,
+			zoom: 8,
 			pos: 'middle-right',
 			speed: 10,
 			points: [[0,0],[1,0],[2,0],[3,0],[0,1],[0,2],[4,1],[1,3],[4,3],[7,3],[8,3],[8,4],[7,4],[6,4],[7,5],[8,5],[4,5],[1,5],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,7]]
@@ -162,7 +162,7 @@
 			id: 'GOSPER',
 			name: 'Gosper Glider Gun',
 			size: [36,9],
-			block_size: 8,
+			zoom: 8,
 			pos: 'top-left',
 			points: [[0,4],[0,5],[1,5],[1,4],[10,4],[10,5],[10,6],[11,3],[12,2],[11,7],[12,8],[13,8],[13,2],[14,5],[16,6],[16,5],[16,4],[15,3],[15,7],[17,5],[20,4],[20,3],[20,2],[21,2],[21,3],[21,4],[22,1],[22,5],[24,1],[24,0],[24,5],[24,6],[34,2],[35,2],[35,3],[34,3]]
 		},
@@ -184,7 +184,7 @@
 			size: [17,33],
 			rule: '34678/3678',
 			pos: 'middle-left',
-			block_size: 5,
+			zoom: 5,
 			rle: '5b3obb3o$3b12o$b16o$b16o$3bo10bo$4b10o8$oob3o$7o$b7o$9o$b7o$7o$oob3o8$4b10o$3bo10bo$b16o$b16o$3b12o$5b3obb3o'
 		},
 		{
@@ -209,7 +209,7 @@
 			rule: '34678/3678',
 			pos: 'bottom-right',
 			speed: 25,
-			block_size: 4,
+			zoom: 4,
 			rle: '4booboo36bo$3b6o6bo12boo14b3o$bbob4obo3b5o5boob6o13bo$b8obb7o3b11o13bo\
 			$31o$b8obb7o3b11o13bo$bbob4obo3b5o5boob6o13bo$3b6o6bo12boo14b3o$4boob\
 			oo36bo3$45bo$44b3o$43b5o$42b7o$41b9o$43b5o$44b3o$43b5o$44b3o$44b3o$43b\
@@ -222,7 +222,7 @@
 			id: 'SIDECAR_HWSS',
 			name: 'Sidecar on HWSS',
 			size: [235,142],
-			block_size: 3,
+			zoom: 3,
 			rle: '29bo$29bobo$12bo17bobo$12boo16bobbo3boo148bo$7boo4boo15bobo4boo147b4o$\
 			3boobboo4b3o13bobo153boob4o5boo$3boobboo4boo7bobo4bo144boo8b3oboo3bo3b\
 			obbo$12boo9boo149boo9booboo3bo7bo$12bo10bo162b5o3bo6bo6boo$187bo3b3o7b\

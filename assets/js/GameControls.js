@@ -125,13 +125,13 @@
 		_setupIntervalSelect: function() {
 			var select = this.elements.intervalSelect;
 			select.options[0] = new Option('Max', '0');
-			select.options[1] = new Option('Very Fast', '25');
-			select.options[2] = new Option('Fast', '10');
-			select.options[3] = new Option('Medium Fast', '5');
-			select.options[4] = new Option('Medium', '3');
-			select.options[5] = new Option('Medium Slow', '2');
-			select.options[6] = new Option('Slow', '1');
-			select.options[7] = new Option('Very Slow', '0.5');
+			select.options[1] = new Option('Very Fast (25fps)', '25');
+			select.options[2] = new Option('Fast (10fps)', '10');
+			select.options[3] = new Option('Medium Fast (5fps)', '5');
+			select.options[4] = new Option('Medium (3fps)', '3');
+			select.options[5] = new Option('Medium Slow (2fps)', '2');
+			select.options[6] = new Option('Slow (1fps)', '1');
+			select.options[7] = new Option('Very Slow (0.5fps)', '0.5');
 			select.onchange = this._handleIntervalSelect.bind(this);
 			this.setSpeed(0);
 		},
