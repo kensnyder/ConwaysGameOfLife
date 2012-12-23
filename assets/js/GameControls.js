@@ -167,8 +167,8 @@
 			this.setBlockSize(select.options[select.selectedIndex].value);
 		},
 		setBlockSize: function(size) {
-console.log(size, this.renderer.blockSize.width, size / this.renderer.blockSize.width)			
-			this.panRatio(size / this.renderer.blockSize.width);
+console.log(size, this.renderer.blockSize, size / this.renderer.blockSize)			
+			this.panRatio(size / this.renderer.blockSize);
 //			var oldBlockSize = this.options.blockSize;
 //			this.options.blockSize = +size;
 //			this.options.width = Math.floor(this.elements.board.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
@@ -183,10 +183,7 @@ console.log(size, this.renderer.blockSize.width, size / this.renderer.blockSize.
 //			else {
 //				this.panRatio(oldBlockSize / this.options.blockSize * 0.25);
 //			}
-			this.renderer.blockSize = {
-				width: +size,
-				height: +size
-			};
+			this.renderer.blockSize = +size;
 			this.renderer.clear();
 			setSelectValue(this.elements.blockSizeSelect, size);
 		},
@@ -266,11 +263,11 @@ console.log(size, this.renderer.blockSize.width, size / this.renderer.blockSize.
 			var drawAtCursor = function(evt) {
 				var x = Math.floor(
 					evt.pageX / 
-					(this.renderer.blockSize.width + (this.renderer.useGridlines ? 1 : 0))
+					(this.renderer.blockSize + (this.renderer.useGridlines ? 1 : 0))
 				);
 				var y = Math.floor(
 					evt.pageY / 
-					(this.renderer.blockSize.height + (this.renderer.useGridlines ? 1 : 0))
+					(this.renderer.blockSize + (this.renderer.useGridlines ? 1 : 0))
 				);
 				if (evt.type == 'click' && this.game.isAlive(x,y) && !this.inMousedown) {
 					this.game.removePoint(x,y);

@@ -4,11 +4,12 @@
 	exports.GameRenderer = function(game, options) {
 		this.game = game;
 		this.container = options.board;
-		this.blockSize = typeof options.blockSize == 'number' ? 
-			{width:options.blockSize,height:options.blockSize} : 
-			typeof options.blockSize == 'object' ? options.blockSize : {width:6,height:6};
+		this.blockSize = options.blockSize || 6;
 		this.container.style.position = 'relative';
 		this.useGridlines = ('useGridlines' in options) ? options.useGridlines : true;
+		this.gridlinesColor = options.gridlinesColor || '#d0d0d0';
+		this.drawVisited = ('drawVisited' in options) ? options.drawVisited : true;
+		this.visitedColor = options.visitedColor || '#eee';
 		this._drawTimestamps = [];
 		this._fps = 0;
 		this.setup();
@@ -73,21 +74,20 @@
 		},
 		drawGrid: function drawGrid() {
 			this.boardSize = {
-				x: Math.floor(this.grid.width / (this.blockSize.width + (this.useGridlines ? 1 : 0))),
-				y: Math.floor(this.grid.height / (this.blockSize.height + (this.useGridlines ? 1 : 0)))
+				x: Math.floor(this.grid.width / (this.blockSize + (this.useGridlines ? 1 : 0))),
+				y: Math.floor(this.grid.height / (this.blockSize + (this.useGridlines ? 1 : 0)))
 			};
 			this.grid.ctx.clearRect(0, 0, this.grid.width, this.grid.height);
 			if (!this.useGridlines) {
 				return;
 			}
-			this.grid.ctx.strokeStyle = '#c0c0c0';
-			this.grid.ctx.strokeStyle = '#ffffff';
+			this.grid.ctx.strokeStyle = this.gridlinesColor;
 			this._drawGridLines('width'); // vertical lines	
 			this._drawGridLines('height'); // horizontal lines
 		},
 		_drawGridLines: function _drawGridLines(prop) {
 			this.grid.ctx.beginPath();
-			for (var i = 0; i <= this.grid[prop]; i += this.blockSize[prop]+1) {
+			for (var i = 0; i <= this.grid[prop]; i += this.blockSize+1) {
 				if (prop == 'width') { // vertical lines	
 					this.grid.ctx.moveTo(i-0.5, 0);
 					this.grid.ctx.lineTo(i-0.5, this.grid.height);
@@ -100,46 +100,49 @@
 			this.grid.ctx.stroke();
 		},
 		drawVisitedBoard: function drawVisitedBoard() {
-			this.visitedBoard.ctx.fillStyle = '#d4d4d4';
+			this.visitedBoard.ctx.fillStyle = this.visitedColor;
 			this.visitedBoard.ctx.clearRect(0, 0, this.visitedBoard.width, this.visitedBoard.height);
-			var w = this.blockSize.width + (this.useGridlines ? 1 : 0);
-			var h = this.blockSize.height + (this.useGridlines ? 1 : 0);
+			var w = this.blockSize + (this.useGridlines ? 1 : 0);
+			var h = this.blockSize + (this.useGridlines ? 1 : 0);
 			var xy;
 			for (var point in this.visitedPoints) {
 				xy = point.split(',');
 				this.visitedBoard.ctx.fillRect(
 					xy[0] * w,
 					xy[1] * h,
-					this.blockSize.width,
-					this.blockSize.height
+					this.blockSize,
+					this.blockSize
 				);
 			}				
 		},
 		drawBoard: function drawBoard() {	
 			this.board.ctx.fillStyle = '#000';
-			this.visitedBoard.ctx.fillStyle = '#d4d4d4';
+			this.visitedBoard.ctx.fillStyle = this.visitedColor;
 			this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
 			var xy;
-			var w = this.blockSize.width + (this.useGridlines ? 1 : 0);
-			var h = this.blockSize.height + (this.useGridlines ? 1 : 0);
+			var w = this.blockSize + (this.useGridlines ? 1 : 0);
+			var h = this.blockSize + (this.useGridlines ? 1 : 0);
 			for (var point in this.game.grid) {
 				xy = point.split(',');
-				if (this.visitedPoints[point] === undefined) {
+				if (this.drawVisited && this.visitedPoints[point] === undefined) {
 					this.visitedPoints[point] = true; 
 					this.visitedBoard.ctx.fillRect(
 						xy[0] * w,
 						xy[1] * h,
-						this.blockSize.width,
-						this.blockSize.height
+						this.blockSize,
+						this.blockSize
 					);
 				}
 				this.board.ctx.fillRect(
 					xy[0] * w,
 					xy[1] * h,
-					this.blockSize.width,
-					this.blockSize.height
+					this.blockSize,
+					this.blockSize
 				);
 			}
+			this.drawStats();
+		},
+		drawStats: function drawStats() {
 			this.board.ctx.fillStyle = 'rgb(0,200,60)';
 			this.board.ctx.font = '10pt Arial';
 			this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 46);
