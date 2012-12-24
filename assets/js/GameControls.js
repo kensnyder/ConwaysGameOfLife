@@ -128,7 +128,7 @@
 			var select = this.elements.visitedSelect;
 			var idx = 0;
 			select[idx] = new Option('(none)','');
-			select[idx++].style.backgroundColor = '#f0f0f0';
+			select[idx++].style.backgroundColor = '#fffff';
 			select[idx] = new Option('blue','#cff1ff');
 			select[idx++].style.backgroundColor = '#cff1ff';
 			select[idx] = new Option('gray','#f0f0f0');
@@ -169,13 +169,13 @@
 		_setupIntervalSelect: function() {
 			var select = this.elements.intervalSelect;
 			select.options[0] = new Option('Max', '0');
-			select.options[1] = new Option('Very Fast (25fps)', '25');
-			select.options[2] = new Option('Fast (10fps)', '10');
-			select.options[3] = new Option('Medium Fast (5fps)', '5');
-			select.options[4] = new Option('Medium (3fps)', '3');
-			select.options[5] = new Option('Medium Slow (2fps)', '2');
-			select.options[6] = new Option('Slow (1fps)', '1');
-			select.options[7] = new Option('Very Slow (0.5fps)', '0.5');
+			select.options[1] = new Option('Very Fast (~25fps)', '25');
+			select.options[2] = new Option('Fast (~10fps)', '10');
+			select.options[3] = new Option('Medium Fast (~5fps)', '5');
+			select.options[4] = new Option('Medium (~3fps)', '3');
+			select.options[5] = new Option('Medium Slow (~2fps)', '2');
+			select.options[6] = new Option('Slow (~1fps)', '1');
+			select.options[7] = new Option('Very Slow (~0.5fps)', '0.5');
 			select.onchange = this._handleIntervalSelect.bind(this);
 			this.setSpeed(0);
 		},
@@ -249,36 +249,35 @@
 		_handleGridlinesSelect: function() {
 			var select = this.elements.gridlinesSelect;
 			this.renderer.gridlinesColor = '#d0d0d0';
-			if (select.selectedIndex == 0) {
+			if (select.selectedIndex === 0) {
 				this.enableGridlines();
 			}
-			else if (this.selectedIndx == 1) {
+			else if (select.selectedIndex === 1) {
 				this.disableGridlines();
 			}
 			else {
-				this.renderer.gridlinesColor = '#fff';
+				this.renderer.gridlinesColor = '#ffffff';
+				this.renderer.useGridlines = 0; // force enable to re-render
+				this.enableGridlines();
 			}
-			this.renderer.drawGrid();
 			select.blur();
 		},
 		enableGridlines: function() {
-			if (this.options.useGridlines == 1) {
+			if (this.renderer.useGridlines == 1) {
 				return;
 			}
-			this.panRatio((this.options.blockSize + 1) / 1);
+			//this.panRatio((this.options.blockSize + 1) / 1);
 			this.renderer.useGridlines = 1;
-			this.renderer.drawGrid();
-			this.renderer.drawBoard();
+			this.renderer.drawAll();
 			setSelectValue(this.elements.gridlinesSelect, '1');
 		},
 		disableGridlines: function() {
-			if (this.options.useGridlines == 0) {
+			if (this.renderer.useGridlines == 0) {
 				return;
 			}
-			this.panRatio(-0.5 / (this.options.blockSize - 1));
+			//this.panRatio(-0.5 / (this.options.blockSize - 1));
 			this.renderer.useGridlines = 0;
-			this.renderer.drawGrid();
-			this.renderer.drawBoard();			
+			this.renderer.drawAll();			
 			setSelectValue(this.elements.gridlinesSelect, '0');
 		},
 		_setupStartButton: function() {

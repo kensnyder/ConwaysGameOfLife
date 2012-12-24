@@ -54,8 +54,11 @@
 			return this;
 		},
 		clear: function clear() {
-			this.drawGrid();
 			this.visitedPoints = {};
+			this.drawAll();
+		},
+		drawAll: function() {
+			this.drawGrid();
 			this.drawVisitedBoard();
 			this.drawBoard();			
 		},
