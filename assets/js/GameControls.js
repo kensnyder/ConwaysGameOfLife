@@ -79,8 +79,8 @@
 		seed: function(ratio) {
 			var x, y, numPoints = Math.floor(this.renderer.boardSize.x * this.renderer.boardSize.y * ratio * 0.60 * 0.60);
 			for (var i = 0; i < numPoints; i++) {
-				x = Math.floor(this.renderer.boardSize.x * Math.random() * 0.60) + Math.floor(this.renderer.boardSize.x * 0.125);
-				y = Math.floor(this.renderer.boardSize.y * Math.random() * 0.60) + Math.floor(this.renderer.boardSize.y * 0.125);
+				x = Math.floor(this.renderer.boardSize.x * Math.random() * 0.60) + Math.floor(this.renderer.boardSize.x * 0.20);
+				y = Math.floor(this.renderer.boardSize.y * Math.random() * 0.60) + Math.floor(this.renderer.boardSize.y * 0.20);
 				if (this.game.isAlive(x,y)) {
 					i--;
 				}
@@ -277,7 +277,14 @@
 		},
 		_setupStartButton: function() {
 			var button = this.elements.startButton;
-			button.onclick = this._handleStartButton.bind(this);
+			var handle = this._handleStartButton.bind(this);
+			button.onclick = handle;
+			window.addEventListener('keyup', function(evt) {
+				if (evt.which != 13) {
+					return;
+				}
+				handle();
+			}, false);
 			this.stop();
 		},
 		_handleStartButton: function() {
