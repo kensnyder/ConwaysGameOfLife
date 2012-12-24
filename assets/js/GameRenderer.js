@@ -126,7 +126,6 @@
 		},
 		drawBoard: function drawBoard() {	
 			this.board.ctx.fillStyle = '#000';
-			this.visitedBoard.ctx.fillStyle = this.visitedColor;
 			this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
 			var xy;
 			var w = this.blockSize + (this.useGridlines ? 1 : 0);
@@ -141,6 +140,7 @@
 				);
 			}
 			if (this.drawVisited) {
+				this.visitedBoard.ctx.fillStyle = this.visitedColor;
 				for (point in this.game.grid) {
 					if (this.visitedPoints[point] === undefined) {
 						xy = point.split(',');
@@ -154,7 +154,7 @@
 					}	
 				}
 			}
-			this.drawStats();
+			//this.drawStats();
 		},
 		drawStats: function drawStats() {
 			this.board.ctx.fillStyle = 'rgb(0,200,60)';

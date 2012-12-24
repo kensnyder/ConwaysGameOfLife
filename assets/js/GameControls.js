@@ -149,7 +149,6 @@
 					this.renderer.drawVisited = true;
 					this.renderer.visitedColor = hex;
 				}
-				this.renderer.drawVisitedBoard();
 			}.bind(this);
 		},
 		_setupOptionsButton: function() {
@@ -349,19 +348,54 @@
 		_setupSaveButton: function() {
 			this.elements.saveButton.onclick = this.save.bind(this);
 		},
-		save: function() {
+		boardToShape: function() {
 			var points = this.game.getPoints();
-			var minX = Infinity;
-			var minY = Infinity;
+			var min = [Infinity,Infinity];
+			var max = [-Infinity,-Infinity];
+			// first find min and max
 			points.forEach(function(xy) {
-				if (xy[0] < minX) minX = xy[0];
-				else if (xy[1] < minY) minY = xy[1];
+				if (xy[0] < min[0]) min[0] = xy[0];
+				else if (xy[1] < min[1]) min[1] = xy[1];
+				if (xy[0] > max[0]) max[0] = xy[0];
+				else if (xy[1] > max[1]) max[1] = xy[1];
 			});
+			// then gather all the points relative to 0,0
 			var newPoints = [];
 			points.forEach(function(xy) {
-				newPoints.push([xy[0]-minX,xy[1]-minY]);
+				newPoints.push([xy[0]-min[0],xy[1]-min[1]]);
 			});
-			console.log(JSON.stringify(newPoints));			
+			return {
+				size: [max[0]-min[0], max[1]-min[1]],
+				points: newPoints
+			};
+		},
+		save: function() {
+			var shape = this.boardToShape();
+			console.log(JSON.stringify(shape.points));			
+		},
+		toPng: function() {
+			var shape = this.boardToShape();
+			var renderer = {};
+			// build up an object comaptible with GameRenderer
+			renderer.useGridlines = true;
+			renderer.gridlinesColor = '#d0d0d0';
+			renderer.drawVisited = false;
+			renderer.grid = document.createElement('canvas');
+			renderer.grid.ctx = renderer.grid.getContext('2d');
+			renderer.grid.width = (shape.size[0]+3) * 7 - 1;
+			renderer.grid.height = (shape.size[1]+3) * 7 - 1;
+			renderer.board = renderer.grid;
+			renderer.blockSize = 6;
+			renderer.game = {grid:{}};
+			shape.points.forEach(function(xy) {
+				renderer.game.grid[(xy[0]+1)+','+(xy[1]+1)] = 1;
+			});
+			
+			GameRenderer.prototype.drawBoard.call(renderer);
+			renderer.grid.ctx.strokeStyle = renderer.gridlinesColor;
+			GameRenderer.prototype._drawGridLines.call(renderer, 'width'); // vertical lines	
+			GameRenderer.prototype._drawGridLines.call(renderer, 'height'); // horizontal lines
+			window.location.href = renderer.grid.toDataURL('image/png');
 		},
 		_setupResetButton: function() {
 			this.elements.resetButton.onclick = this.reset.bind(this);
