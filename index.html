@@ -17,14 +17,11 @@
 			Shape: <select id="seedSelect"></select> &nbsp; &nbsp;
 			<input id="startButton" type="button" /> &nbsp; &nbsp;
 			<input id="resetButton" type="button" value="Reset" /> &nbsp; &nbsp;
-			<input id="saveButton" type="button" value="Save State" /> &nbsp; &nbsp;
-			<a id="optionsButton" title="Options...">⚙</a>
+			<input id="saveButton" type="button" value="Save" /> &nbsp; &nbsp;
+			<a id="optionsButton" title="Options..." href="#">⚙</a>
+			<a id="infoButton" title="What is Conway's Game of Life?" href="http://www.conwaylife.com/wiki/Conway%27s_Game_of_Life" target="_blank">i</a>
 			<div id="options" style="display:none">
 				<table>
-					<tr>
-						<th>Speed:</th>
-						<td><select id="intervalSelect"></select></td>
-					</tr>
 					<tr>
 						<th>Cell Size:</th>
 						<td><select id="blockSizeSelect"></select></td>
@@ -42,6 +39,10 @@
 						<td><select id="gridlinesSelect"></select></td>
 					</tr>
 					<tr>
+						<th>Speed:</th>
+						<td><select id="intervalSelect"></select></td>
+					</tr>
+					<tr>
 						<td colspan="2" align="right">
 							<a id="optionsClose" href="#">Close</a>
 						</td>
@@ -50,10 +51,15 @@
 			</div>
 		</div>
 		<script>
-			var controls = new GameControls(
-				document.getElementById('controls'),
-				document.getElementById('board')
-			);
+			if (document.createElement('canvas').getContext || Array.prototype.forEach) {
+				var controls = new GameControls(
+					document.getElementById('controls'),
+					document.getElementById('board')
+				);
+			}
+			else {
+				alert('Your browser does not support this game. Please use IE9+, Firefox, Safari, or Chrome.');
+			}
 		</script>
 	</body>
 </html>

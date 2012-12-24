@@ -155,9 +155,10 @@
 		_setupOptionsButton: function() {
 			var button = this.elements.optionsButton;
 			var div = this.elements.options;
-			button.onclick = function() {
+			button.addEventListener('click', function(evt) {
+				evt.preventDefault();
 				div.style.display = div.style.display == 'none' ? '' : 'none';
-			};
+			}, false);
 			this.elements.board.addEventListener('click', function() {
 				div.style.display = 'none';
 			}, false);

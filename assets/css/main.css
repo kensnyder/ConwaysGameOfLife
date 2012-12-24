@@ -5,6 +5,9 @@ html, body, #board {
 	position: relative;
 	overflow: hidden;
 }
+a {
+	outline: none;
+}
 #controls {
 	background-color: #ddd;
 	padding: 3px 8px;
@@ -77,5 +80,24 @@ body, select, input {
 }
 #optionsClose:hover {
 	color: #000;
+	text-decoration: none;
+}
+#infoButton {
+	position: absolute;
+	top: 4px;
+	right: 44px;
+	width: 18px;
+	height: 18px;
+	border-radius: 9px;
+	font: 16px/16px "Times New Roman", Times, serif;
+	font-style: italic;
+	background-color: #555;
+	color: #fff;
+	display: block;
+	text-decoration: none;
+	text-align: center;
+}
+#infoButton:hover {
+	background-color: #000;
 	text-decoration: none;
 }
