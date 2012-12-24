@@ -4,15 +4,15 @@
 	exports.GameRenderer = function(game, options) {
 		this.game = game;
 		this.container = options.board;
-		this.blockSize = options.blockSize || 6;
 		this.container.style.position = 'relative';
 		this.useGridlines = ('useGridlines' in options) ? options.useGridlines : true;
 		this.gridlinesColor = options.gridlinesColor || '#d0d0d0';
-		this.drawVisited = ('drawVisited' in options) ? options.drawVisited : true;
-		this.visitedColor = options.visitedColor || '#eee';
+		this.drawVisited = ('drawVisited' in options) ? options.drawVisited : false;
+		this.visitedColor = options.visitedColor || '#ceffde'; // green
 		this._drawTimestamps = [];
 		this._fps = 0;
 		this.setup();
+		this.setBlockSize(options.blockSize || 6);
 	}
 
 	GameRenderer.prototype = {
@@ -72,11 +72,14 @@
 			setSize();
 			return canvas;
 		},
-		drawGrid: function drawGrid() {
+		setBlockSize: function setBlockSize(pixels) {
+			this.blockSize = pixels;
 			this.boardSize = {
 				x: Math.floor(this.grid.width / (this.blockSize + (this.useGridlines ? 1 : 0))),
 				y: Math.floor(this.grid.height / (this.blockSize + (this.useGridlines ? 1 : 0)))
 			};
+		},
+		drawGrid: function drawGrid() {
 			this.grid.ctx.clearRect(0, 0, this.grid.width, this.grid.height);
 			if (!this.useGridlines) {
 				return;
@@ -100,8 +103,11 @@
 			this.grid.ctx.stroke();
 		},
 		drawVisitedBoard: function drawVisitedBoard() {
-			this.visitedBoard.ctx.fillStyle = this.visitedColor;
 			this.visitedBoard.ctx.clearRect(0, 0, this.visitedBoard.width, this.visitedBoard.height);
+			if (!this.drawVisited) {
+				return;
+			}
+			this.visitedBoard.ctx.fillStyle = this.visitedColor;
 			var w = this.blockSize + (this.useGridlines ? 1 : 0);
 			var h = this.blockSize + (this.useGridlines ? 1 : 0);
 			var xy;
@@ -124,21 +130,26 @@
 			var h = this.blockSize + (this.useGridlines ? 1 : 0);
 			for (var point in this.game.grid) {
 				xy = point.split(',');
-				if (this.drawVisited && this.visitedPoints[point] === undefined) {
-					this.visitedPoints[point] = true; 
-					this.visitedBoard.ctx.fillRect(
-						xy[0] * w,
-						xy[1] * h,
-						this.blockSize,
-						this.blockSize
-					);
-				}
 				this.board.ctx.fillRect(
 					xy[0] * w,
 					xy[1] * h,
 					this.blockSize,
 					this.blockSize
 				);
+			}
+			if (this.drawVisited) {
+				for (point in this.game.grid) {
+					if (this.visitedPoints[point] === undefined) {
+						xy = point.split(',');
+						this.visitedPoints[point] = true; 
+						this.visitedBoard.ctx.fillRect(
+							xy[0] * w,
+							xy[1] * h,
+							this.blockSize,
+							this.blockSize
+						);
+					}	
+				}
 			}
 			this.drawStats();
 		},

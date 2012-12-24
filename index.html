@@ -13,14 +13,40 @@
 	<body>
 		<div id="board"></div>
 		<div id="controls">
-			Rule <select id="ruleSelect"></select> &nbsp; &nbsp;
 			Seed: <select id="seedSelect"></select> &nbsp; &nbsp;
-			Speed: <select id="intervalSelect"></select> &nbsp; &nbsp;
-			Cell Size: <select id="blockSizeSelect"></select> &nbsp; &nbsp;
-			Gridlines: <select id="gridlinesSelect"></select> &nbsp; &nbsp;
 			<input id="startButton" type="button" /> &nbsp; &nbsp;
 			<input id="resetButton" type="button" value="Reset" /> &nbsp; &nbsp;
 			<input id="saveButton" type="button" value="Save State" /> &nbsp; &nbsp;
+			<input id="optionsButton" type="button" value="Options..." />
+			<div id="options" style="display:none">
+				<table>
+					<tr>
+						<th>Speed:</th>
+						<td><select id="intervalSelect"></select></td>
+					</tr>
+					<tr>
+						<th>Cell Size:</th>
+						<td><select id="blockSizeSelect"></select></td>
+					</tr>
+					<tr>
+						<th>Game Rule:</th>
+						<td><select id="ruleSelect"></select></td>
+					</tr>
+					<tr>
+						<th>Visited Cells:</th>
+						<td><select id="visitedSelect"></select></td>
+					</tr>
+					<tr>
+						<th>Gridlines:</th>
+						<td><select id="gridlinesSelect"></select></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="right">
+							<a id="optionsClose" href="#">Close</a>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 		<script>
 			var controls = new GameControls(

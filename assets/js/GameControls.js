@@ -26,6 +26,8 @@
 			this._setupBlockSizeSelect();
 			this._setupGridlinesSelect();
 			this._setupRuleSelect();
+			this._setupVisitedSelect();
+			this._setupOptionsButton();
 			this._setupStartButton();
 			this._setupBoardClick();
 			this._setupSaveButton();
@@ -122,6 +124,48 @@
 			this.game.setRuleString(value);			
 			setSelectValue(this.elements.ruleSelect, value);
 		},
+		_setupVisitedSelect: function() {
+			var select = this.elements.visitedSelect;
+			var idx = 0;
+			select[idx] = new Option('(none)','');
+			select[idx++].style.backgroundColor = '#f0f0f0';
+			select[idx] = new Option('blue','#cff1ff');
+			select[idx++].style.backgroundColor = '#cff1ff';
+			select[idx] = new Option('gray','#f0f0f0');
+			select[idx++].style.backgroundColor = '#f0f0f0';
+			select[idx] = new Option('yellow','#fffed9');
+			select[idx++].style.backgroundColor = '#fffed9';
+			select[idx] = new Option('green','#ceffde');
+			select[idx++].style.backgroundColor = '#ceffde';
+			select[idx] = new Option('orange','#fff0cf');
+			select[idx++].style.backgroundColor = '#fff0cf';
+			select.selectedIndex = 0;
+			select.onchange = function() {
+				var hex = select.options[select.selectedIndex].value;
+				if (hex === '') {
+					this.renderer.drawVisited = false;
+				}
+				else {
+					this.renderer.drawVisited = true;
+					this.renderer.visitedColor = hex;
+				}
+				this.renderer.drawVisitedBoard();
+			}.bind(this);
+		},
+		_setupOptionsButton: function() {
+			var button = this.elements.optionsButton;
+			var div = this.elements.options;
+			button.onclick = function() {
+				div.style.display = div.style.display == 'none' ? '' : 'none';
+			};
+			this.elements.board.addEventListener('click', function() {
+				div.style.display = 'none';
+			}, false);
+			this.elements.optionsClose.addEventListener('click', function(evt) {
+				evt.preventDefault();
+				div.style.display = 'none';
+			}, false);
+		},
 		_setupIntervalSelect: function() {
 			var select = this.elements.intervalSelect;
 			select.options[0] = new Option('Max', '0');
@@ -167,8 +211,9 @@
 			this.setBlockSize(select.options[select.selectedIndex].value);
 		},
 		setBlockSize: function(size) {
-console.log(size, this.renderer.blockSize, size / this.renderer.blockSize)			
-			this.panRatio(size / this.renderer.blockSize);
+//console.log(size, this.renderer.blockSize, size / this.renderer.blockSize)
+			
+			//this.panRatio(size / this.renderer.blockSize);
 //			var oldBlockSize = this.options.blockSize;
 //			this.options.blockSize = +size;
 //			this.options.width = Math.floor(this.elements.board.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
@@ -183,7 +228,13 @@ console.log(size, this.renderer.blockSize, size / this.renderer.blockSize)
 //			else {
 //				this.panRatio(oldBlockSize / this.options.blockSize * 0.25);
 //			}
-			this.renderer.blockSize = +size;
+			size = +size;
+			var oldBlockSize = this.renderer.blockSize;
+			var oldBoardSize = this.renderer.boardSize;
+			this.renderer.setBlockSize(size);
+			var panX = oldBoardSize.x / this.renderer.boardSize.x / 2;
+			var panY = oldBoardSize.y / this.renderer.boardSize.y / 2;
+			this.pan(panX, panY);
 			this.renderer.clear();
 			setSelectValue(this.elements.blockSizeSelect, size);
 		},
@@ -191,17 +242,23 @@ console.log(size, this.renderer.blockSize, size / this.renderer.blockSize)
 			var select = this.elements.gridlinesSelect;
 			select.options[0] = new Option('On', '1');
 			select.options[1] = new Option('Off', '0');
-			this.enableGridlines();			
+			select.options[2] = new Option('White', 'white');
+			this.enableGridlines();
 			select.onchange = this._handleGridlinesSelect.bind(this);
 		},
 		_handleGridlinesSelect: function() {
 			var select = this.elements.gridlinesSelect;
+			this.renderer.gridlinesColor = '#d0d0d0';
 			if (select.selectedIndex == 0) {
 				this.enableGridlines();
 			}
-			else {
+			else if (this.selectedIndx == 1) {
 				this.disableGridlines();
 			}
+			else {
+				this.renderer.gridlinesColor = '#fff';
+			}
+			this.renderer.drawGrid();
 			select.blur();
 		},
 		enableGridlines: function() {
