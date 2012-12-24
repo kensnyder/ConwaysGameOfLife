@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8" />
 		<title>Conway's Game of Life :: Ken Snyder</title>
 		<script src="./assets/js/Game.js"></script>
 		<script src="./assets/js/GameRenderer.js"></script>
@@ -13,11 +14,11 @@
 	<body>
 		<div id="board"></div>
 		<div id="controls">
-			Seed: <select id="seedSelect"></select> &nbsp; &nbsp;
+			Shape: <select id="seedSelect"></select> &nbsp; &nbsp;
 			<input id="startButton" type="button" /> &nbsp; &nbsp;
 			<input id="resetButton" type="button" value="Reset" /> &nbsp; &nbsp;
 			<input id="saveButton" type="button" value="Save State" /> &nbsp; &nbsp;
-			<input id="optionsButton" type="button" value="Options..." />
+			<a id="optionsButton" title="Options...">⚙</a>
 			<div id="options" style="display:none">
 				<table>
 					<tr>

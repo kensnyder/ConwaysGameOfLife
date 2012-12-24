@@ -110,7 +110,7 @@
 		_setupRuleSelect: function() {
 			var select = this.elements.ruleSelect;
 			GameRules.forEach(function(rule, i) {
-				select.options[i] = new Option(rule.rule + ' - ' + rule.name, rule.rule);
+				select.options[i] = new Option(padRule(rule.rule) + ' ' + rule.name, rule.rule);
 			});
 			select.selectedIndex = 0;
 			select.onchange = this._handleRuleSelect.bind(this);
@@ -168,14 +168,15 @@
 		},
 		_setupIntervalSelect: function() {
 			var select = this.elements.intervalSelect;
-			select.options[0] = new Option('Max', '0');
-			select.options[1] = new Option('Very Fast (~25fps)', '25');
-			select.options[2] = new Option('Fast (~10fps)', '10');
-			select.options[3] = new Option('Medium Fast (~5fps)', '5');
-			select.options[4] = new Option('Medium (~3fps)', '3');
-			select.options[5] = new Option('Medium Slow (~2fps)', '2');
-			select.options[6] = new Option('Slow (~1fps)', '1');
-			select.options[7] = new Option('Very Slow (~0.5fps)', '0.5');
+			select.options[0] = new Option('Max',    '0');
+			select.options[1] = new Option('~40fps', '40');
+			select.options[1] = new Option('~25fps', '25');
+			select.options[2] = new Option('~10fps', '10');
+			select.options[3] = new Option('~5fps',  '5');
+			select.options[4] = new Option('~3fps',  '3');
+			select.options[5] = new Option('~2fps',  '2');
+			select.options[6] = new Option('~1fps',  '1');
+			select.options[7] = new Option('~0.5fps','0.5');
 			select.onchange = this._handleIntervalSelect.bind(this);
 			this.setSpeed(0);
 		},
@@ -208,35 +209,23 @@
 		_handleBlockSizeSelect: function() {
 			var select = this.elements.blockSizeSelect;
 			select.blur();
-			this.setBlockSize(select.options[select.selectedIndex].value);
+			var newSize = select.options[select.selectedIndex].value;
+			if (newSize < 3) {
+				this.disableGridlines();
+			}
+			this.setBlockSize(newSize);
 		},
 		setBlockSize: function(size) {
-//console.log(size, this.renderer.blockSize, size / this.renderer.blockSize)
-			
-			//this.panRatio(size / this.renderer.blockSize);
-//			var oldBlockSize = this.options.blockSize;
-//			this.options.blockSize = +size;
-//			this.options.width = Math.floor(this.elements.board.offsetWidth / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
-//			this.options.height = Math.floor(this.elements.board.offsetHeight / (this.options.blockSize + (this.options.gridlines ? 1 : 0)));
-//			this.renderer.blockSize = {
-//				width: this.options.blockSize,
-//				height: this.options.blockSize
-//			};
-//			if (oldBlockSize > this.options.blockSize) {
-//				this.panRatio(this.options.blockSize / oldBlockSize * -0.5);
-//			}
-//			else {
-//				this.panRatio(oldBlockSize / this.options.blockSize * 0.25);
-//			}
 			size = +size;
-			var oldBlockSize = this.renderer.blockSize;
 			var oldBoardSize = this.renderer.boardSize;
 			this.renderer.setBlockSize(size);
-			var panX = oldBoardSize.x / this.renderer.boardSize.x / 2;
-			var panY = oldBoardSize.y / this.renderer.boardSize.y / 2;
-			this.pan(panX, panY);
-			this.renderer.clear();
+			var newBoardSize = this.renderer.boardSize;
+			this.panForResize(oldBoardSize, newBoardSize);
+			this.renderer.drawAll();
 			setSelectValue(this.elements.blockSizeSelect, size);
+		},
+		panForResize: function(oldBoardSize, newBoardSize) {
+			this.pan(Math.floor(oldBoardSize.x - newBoardSize.x), Math.floor(oldBoardSize.y - newBoardSize.y));
 		},
 		_setupGridlinesSelect: function() {
 			var select = this.elements.gridlinesSelect;
@@ -250,6 +239,7 @@
 			var select = this.elements.gridlinesSelect;
 			this.renderer.gridlinesColor = '#d0d0d0';
 			if (select.selectedIndex === 0) {
+				this.renderer.useGridlines = 0; // force enable to re-render
 				this.enableGridlines();
 			}
 			else if (select.selectedIndex === 1) {
@@ -259,6 +249,7 @@
 				this.renderer.gridlinesColor = '#ffffff';
 				this.renderer.useGridlines = 0; // force enable to re-render
 				this.enableGridlines();
+				select.selectedIndex = 2; // reset value
 			}
 			select.blur();
 		},
@@ -266,18 +257,22 @@
 			if (this.renderer.useGridlines == 1) {
 				return;
 			}
-			//this.panRatio((this.options.blockSize + 1) / 1);
+			var oldBoardSize = this.renderer.boardSize;
 			this.renderer.useGridlines = 1;
 			this.renderer.drawAll();
+			var newBoardSize = this.renderer.boardSize;
+			this.panForResize(oldBoardSize, newBoardSize);
 			setSelectValue(this.elements.gridlinesSelect, '1');
 		},
 		disableGridlines: function() {
 			if (this.renderer.useGridlines == 0) {
 				return;
 			}
-			//this.panRatio(-0.5 / (this.options.blockSize - 1));
+			var oldBoardSize = this.renderer.boardSize;
 			this.renderer.useGridlines = 0;
-			this.renderer.drawAll();			
+			this.renderer.drawAll();
+			var newBoardSize = this.renderer.boardSize;		
+			this.panForResize(oldBoardSize, newBoardSize);
 			setSelectValue(this.elements.gridlinesSelect, '0');
 		},
 		_setupStartButton: function() {
@@ -292,7 +287,7 @@
 				this.stop();
 			}
 			else if (this.game.numPoints == 0) {
-				alert('Before starting, please choose a seed pattern or click squares to add cells.');
+				alert('Before starting, please choose a shape or click squares to add cells.');
 			}
 			else {
 				this.start();
@@ -307,7 +302,7 @@
 		},		
 		start: function() {
 			var button = this.elements.startButton;
-			button.value = 'Pause \u2590\u2590';
+			button.value = 'Pause \u220E\u220E';
 			this.isRunning = true;
 			this._startTime = +new Date;
 			this._intervalId = setInterval(this._tickAndDraw.bind(this), this.options.interval);
@@ -405,6 +400,11 @@
 		}
 		select.selectedIndex = 0;
 		return 0;
+	}
+	
+	function padRule(rule) {
+		var full = '           ';
+		return rule + full.slice(rule.length).replace(/ /g, '\xA0');
 	}
 	
 }(typeof exports === 'undefined' ? this : exports));
