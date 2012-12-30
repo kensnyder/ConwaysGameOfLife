@@ -373,7 +373,31 @@
 			var shape = this.boardToShape();
 			console.log(JSON.stringify(shape.points));			
 		},
+		// wow this should be refactored
 		toPng: function() {
+			var sizes = [
+				{
+					maxBoardSize: 25,
+					blockSize: 6,
+					useGridlines: true
+				},
+				{
+					maxBoardSize: 50,
+					blockSize: 3,
+					useGridlines: true
+				},
+				{
+					maxBoardSize: 100,
+					blockSize: 2,
+					useGridlines: false
+				},
+				{
+					maxBoardSize: Infinity,
+					blockSize: 1,
+					useGridlines: false
+				}
+			];
+			
 			var shape = this.boardToShape();
 			var renderer = {};
 			// build up an object comaptible with GameRenderer
@@ -382,15 +406,14 @@
 			renderer.drawVisited = false;
 			renderer.grid = document.createElement('canvas');
 			renderer.grid.ctx = renderer.grid.getContext('2d');
-			renderer.grid.width = (shape.size[0]+3) * 7 - 1;
-			renderer.grid.height = (shape.size[1]+3) * 7 - 1;
+			renderer.grid.width = (shape.size[0]+3) * 7 + 1;
+			renderer.grid.height = (shape.size[1]+3) * 7 + 1;
 			renderer.board = renderer.grid;
 			renderer.blockSize = 6;
 			renderer.game = {grid:{}};
 			shape.points.forEach(function(xy) {
 				renderer.game.grid[(xy[0]+1)+','+(xy[1]+1)] = 1;
 			});
-			
 			GameRenderer.prototype.drawBoard.call(renderer);
 			renderer.grid.ctx.strokeStyle = renderer.gridlinesColor;
 			GameRenderer.prototype._drawGridLines.call(renderer, 'width'); // vertical lines	

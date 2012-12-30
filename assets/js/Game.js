@@ -43,6 +43,9 @@
 					nx = neighbors[n][0];
 					ny = neighbors[n][1];
 					nxy = nx+','+ny;
+					if (newGrid[nxy] !== undefined) {
+						continue;
+					}
 					// see http://jsperf.com/typeof-vs-in for why we use `!== undefined`
 					cnt = (neighborCache[nxy] !== undefined) ?
 						neighborCache[nxy] :

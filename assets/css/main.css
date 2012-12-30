@@ -10,7 +10,7 @@ a {
 }
 #controls {
 	background-color: #ddd;
-	padding: 3px 8px;
+	padding: 3px 0;
 	position: absolute;
 	opacity: 0.50;
 	-webkit-transition: all 0.33s;
@@ -21,7 +21,7 @@ a {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 20px;
+	height: 21px;
 	cursor: default;
 }
 #controls:hover {
@@ -29,8 +29,8 @@ a {
 }
 #options {
 	position: absolute;
-	top: 26px;
-	right: 16px;
+	top: 27px;
+	right: 0;
 	background-color: #ddd;
 	padding: 8px;
 	border-radius: 0 0 0 20px;
@@ -62,9 +62,9 @@ body, select, input {
 	display: block;
 	position: absolute;
 	top: 0;
-	right: 21px;
+	right: 8px;
 	font-size: 30px;
-	line-height: 22px;
+	line-height: 24px;
 	text-decoration: none;
 	color: #555;
 	cursor: pointer;
@@ -83,21 +83,22 @@ body, select, input {
 	text-decoration: none;
 }
 #infoButton {
-	position: absolute;
-	top: 4px;
-	right: 44px;
+	display: inline-block;
 	width: 18px;
 	height: 18px;
 	border-radius: 9px;
+	margin: 0 16px 0 8px;
 	font: 16px/16px "Times New Roman", Times, serif;
 	font-style: italic;
 	background-color: #555;
 	color: #fff;
-	display: block;
 	text-decoration: none;
 	text-align: center;
 }
 #infoButton:hover {
 	background-color: #000;
 	text-decoration: none;
+}
+#controlsMain {
+	display: inline-block;
 }

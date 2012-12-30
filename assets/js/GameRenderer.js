@@ -9,34 +9,40 @@
 		this.gridlinesColor = options.gridlinesColor || '#d0d0d0';
 		this.drawVisited = ('drawVisited' in options) ? options.drawVisited : false;
 		this.visitedColor = options.visitedColor || '#ceffde'; // green
-		this._drawTimestamps = [];
-		this._fps = 0;
 		this.setup();
 		this.setBlockSize(options.blockSize || 6);
+		this.perf = {};
 	}
 
 	GameRenderer.prototype = {
 		draw: function draw() {
-			this._drawTimestamps.push(+new Date);
-			if (this._drawTimestamps.length > 50) {
-				this._drawTimestamps.shift();
-			}
 			this.drawBoard();
+			this.drawStats();
 			return this;
 		},
 		getFps: function getFps() {
-			if (!this._fps || (this.game.generation % 50) == 0) {
-				if (this._drawTimestamps.length < 50) {
-					return 0;
-				} 
-				var ms = +new Date - this._drawTimestamps[0];
-				var avgMs = ms / this._drawTimestamps.length;
-				if (avgMs < 1) {
-					return 1000;
-				}
-				this._fps = Math.round(1000 / avgMs, 1);
+			var elapsed, now;
+			if (this.game.numPoints === 0) {
+				return 0;
 			}
-			return this._fps || 0;
+			if (this.game.generation === 0) {
+				this.perf.lastDrawTime = null;
+				this.perf.fps = 0;
+				this.perf.lastGeneration = 0;
+			}
+			else if (this.perf.lastDrawTime) {
+				now = +new Date;
+				elapsed = now - this.perf.lastDrawTime;
+				if (elapsed > 1000) {
+					this.perf.fps = Math.round(1000 / elapsed * (this.game.generation - this.perf.lastGeneration), 0);
+					this.perf.lastGeneration = this.game.generation;
+					this.perf.lastDrawTime = now;
+				}
+			}
+			else {
+				this.perf.lastDrawTime = +new Date;
+			}
+			return this.perf.fps;
 		},
 		setup: function setup() {
 			this.container.innerHTML = '';
@@ -95,12 +101,12 @@
 			this.grid.ctx.beginPath();
 			for (var i = 0; i <= this.grid[prop]; i += this.blockSize+1) {
 				if (prop == 'width') { // vertical lines	
-					this.grid.ctx.moveTo(i-0.5, 0);
-					this.grid.ctx.lineTo(i-0.5, this.grid.height);
+					this.grid.ctx.moveTo(i+0.5, 0);
+					this.grid.ctx.lineTo(i+0.5, this.grid.height);
 				}
 				else if (prop == 'height') { // horizontal lines
-					this.grid.ctx.moveTo(0, i-0.5);
-					this.grid.ctx.lineTo(this.grid.width, i-0.5);
+					this.grid.ctx.moveTo(0, i+0.5);
+					this.grid.ctx.lineTo(this.grid.width, i+0.5);
 				}		
 			}
 			this.grid.ctx.stroke();
@@ -117,8 +123,8 @@
 			for (var point in this.visitedPoints) {
 				xy = point.split(',');
 				this.visitedBoard.ctx.fillRect(
-					xy[0] * w,
-					xy[1] * h,
+					xy[0] * w + 1,
+					xy[1] * h + 1,
 					this.blockSize,
 					this.blockSize
 				);
@@ -133,8 +139,8 @@
 			for (var point in this.game.grid) {
 				xy = point.split(',');
 				this.board.ctx.fillRect(
-					xy[0] * w,
-					xy[1] * h,
+					xy[0] * w + 1,
+					xy[1] * h + 1,
 					this.blockSize,
 					this.blockSize
 				);
@@ -146,23 +152,33 @@
 						xy = point.split(',');
 						this.visitedPoints[point] = true; 
 						this.visitedBoard.ctx.fillRect(
-							xy[0] * w,
-							xy[1] * h,
+							xy[0] * w + 1,
+							xy[1] * h + 1,
 							this.blockSize,
 							this.blockSize
 						);
 					}	
 				}
 			}
-			//this.drawStats();
+		},
+		getStats: function getStats() {
+			return {
+				Board: this.boardSize.x + 'x' + this.boardSize.y,
+				Tick: this.game.generation,
+				Cells: this.game.numPoints,
+				FPS: this.getFps() || '-'
+			};
 		},
 		drawStats: function drawStats() {
-			this.board.ctx.fillStyle = 'rgb(0,200,60)';
+			this.board.ctx.fillStyle = 'rgba(255,255,255,0.75)';
+			this.board.ctx.fillRect(0,22,115,64);
+			this.board.ctx.fillStyle = 'rgba(30,62,246,0.80)';
 			this.board.ctx.font = '10pt Arial';
-			this.board.ctx.fillText('Board: ' + this.boardSize.x + 'x' + this.boardSize.y, 6, 46);
-			this.board.ctx.fillText('Tick: ' + this.game.generation, 6, 58);
-			this.board.ctx.fillText('Cells: ' + this.game.numPoints, 6, 70);
-			this.board.ctx.fillText('FPS: ' + this.getFps() || '-', 6, 82);
+			var stats = this.getStats();
+			this.board.ctx.fillText('Board: ' + stats.Board, 6, 43);
+			this.board.ctx.fillText('Tick: ' + stats.Tick, 6, 55);
+			this.board.ctx.fillText('Cells: ' + stats.Cells, 6, 67);
+			this.board.ctx.fillText('FPS: ' + stats.FPS, 6, 79);
 		},
 		killOffscreenPoints: function killOffscreenPoints() {
 			this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
