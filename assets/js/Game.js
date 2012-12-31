@@ -37,9 +37,23 @@
 			var survive = this.rule.survive;
 			var birth = this.rule.birth;
 			for (var point in this.grid) {
+				// get xy
 				xy = point.split(',');
 				x = +xy[0];
 				y = +xy[1];
+				// check self
+				cnt = (neighborCache[point] !== undefined) ?
+					neighborCache[point] :
+					neighborCache[point] = this._neighborShortcount(x, y);					
+				isAlive = this.grid[point] !== undefined;
+				if (
+					(isAlive && survive[cnt] !== undefined)
+					|| (!isAlive && birth[cnt] !== undefined)
+				) {
+					newGrid[point] = true;
+					this.numPoints++;
+				}					
+				// check neighbors
 				neighbors = this._getNeighbors(x,y);
 				for (n = 0; n < 8; n++) {
 					nx = neighbors[n][0];
@@ -51,11 +65,11 @@
 					// see http://jsperf.com/typeof-vs-in for why we use `!== undefined`
 					cnt = (neighborCache[nxy] !== undefined) ?
 						neighborCache[nxy] :
-						neighborCache[nxy] = this._neighborShortcount(nx, ny);
+						neighborCache[nxy] = this._neighborShortcount(nx, ny);					
 					isAlive = this.grid[nxy] !== undefined;
 					if (
-						(isAlive && survive[cnt])
-						|| (!isAlive && birth[cnt])
+						(isAlive && survive[cnt] !== undefined)
+						|| (!isAlive && birth[cnt] !== undefined)
 					) {
 						newGrid[nxy] = true;
 						this.numPoints++;

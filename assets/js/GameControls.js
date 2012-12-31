@@ -110,20 +110,35 @@
 		},	
 		_setupRuleSelect: function() {
 			var select = this.elements.ruleSelect;
+			select.options[0] = new Option('Custom...', 'custom');
 			GameRules.forEach(function(rule, i) {
-				select.options[i] = new Option(padRule(rule.rule) + ' ' + rule.name, rule.rule);
+				select.options[i+1] = new Option(padRule(rule.rule) + ' ' + rule.name, rule.rule);
 			});
-			select.selectedIndex = 0;
 			select.onchange = this._handleRuleSelect.bind(this);
+			this.setRule('23/3');
 			this.updateOptionsSummary();
 		},
 		_handleRuleSelect: function() {
 			var select = this.elements.ruleSelect;
 			select.blur();
-			this.setRule(select.options[select.selectedIndex].value);
+			this.setRule(getSelectValue(select));
 			this.updateOptionsSummary();
 		},
-		setRule: function(value) {			
+		setRule: function(value) {
+			var lastValue = getSelectValue(this.elements.ruleSelect);
+			if (value == 'custom') {
+				value = prompt('Enter rulestring: (e.g. "23/3" or "B3/S23")');
+				if (!value) {
+					this.setRule(lastValue);
+					return;
+				}
+				if (!value.match(/^B?[0-8]*\/S?[0-8]*$/)) {
+					alert('Invalid rulestring. Use the format "23/3" or "B3/S23".');
+					this.setRule(lastValue);
+					return;
+				}
+				this.elements.ruleSelect.options[this.elements.ruleSelect.options.length] = new Option(value, value);
+			}
 			this.game.setRuleString(value);			
 			setSelectValue(this.elements.ruleSelect, value);
 			this.updateOptionsSummary();
@@ -180,7 +195,7 @@
 			select.options[4] = new Option('≈3fps',  '3');
 			select.options[5] = new Option('≈2fps',  '2');
 			select.options[6] = new Option('≈1fps',  '1');
-			select.options[7] = new Option('≈0.5fps','0.5');
+			select.options[7] = new Option('≈1/2fps','0.5');
 			select.onchange = this._handleIntervalSelect.bind(this);
 			this.setSpeed(0);
 		},
@@ -284,7 +299,7 @@
 			var button = this.elements.startButton;
 			var handle = this._handleStartButton.bind(this);
 			button.onclick = handle;
-			window.addEventListener('keyup', function(evt) {
+			document.addEventListener('keyup', function(evt) {
 				if (evt.which != 13) {
 					return;
 				}
