@@ -54,7 +54,11 @@
 					this.numPoints++;
 				}					
 				// check neighbors
-				neighbors = this._getNeighbors(x,y);
+				neighbors = [
+					[x-1,y-1],[x  ,y-1],[x+1,y-1],
+					[x,  y  ],          [x+1,y  ],
+					[x-1,y+1],[x  ,y+1],[x+1,y+1],
+				];
 				for (n = 0; n < 8; n++) {
 					nx = neighbors[n][0];
 					ny = neighbors[n][1];
@@ -124,33 +128,30 @@
 		serialize: function serialize() {
 			return JSON.stringify(this.grid);
 		},
-		_getNeighbors: function _getNeighbors(coordX, coordY) {
-			var x, y;
-			var neighbors = [];
-			for (x = coordX-1; x <= coordX+1; x++) {
-				for (y = coordY-1; y <= coordY+1; y++) {
-					if (x == coordX && y == coordY) {
-						continue;
-					}
-					neighbors.push([x,y]);
-				}
-			}
-			return neighbors;
-		},
-		_neighborShortcount: function _neighborShortcount(coordX, coordY) {
-			var x, y;
+		_neighborShortcount: function _neighborShortcount(x, y) {
 			var neighbors = 0;
-			for (x = coordX-1; x <= coordX+1; x++) {
-				for (y = coordY-1; y <= coordY+1; y++) {
-					if (x == coordX && y == coordY) {
-						continue;
-					}
-					neighbors += this.grid[x+','+y] ? 1 : 0;
-					if (neighbors > this.rule.max) {
-						break;
-					}
-				}
-			}
+			if (this.grid[(x-1)+','+(y-1)] !== undefined) neighbors++;
+			if (neighbors > this.rule.max) return neighbors;
+			
+			if (this.grid[(x)+','+(y-1)] !== undefined)   neighbors++;
+			if (neighbors > this.rule.max) return neighbors;
+			
+			if (this.grid[(x+1)+','+(y-1)] !== undefined) neighbors++;
+			if (neighbors > this.rule.max) return neighbors;
+			
+			if (this.grid[(x-1)+','+(y)] !== undefined)   neighbors++;
+			if (neighbors > this.rule.max) return neighbors;
+			
+			if (this.grid[(x+1)+','+(y)] !== undefined)   neighbors++;
+			if (neighbors > this.rule.max) return neighbors;
+			
+			if (this.grid[(x-1)+','+(y+1)] !== undefined) neighbors++;
+			if (neighbors > this.rule.max) return neighbors;
+			
+			if (this.grid[(x)+','+(y+1)] !== undefined)   neighbors++;
+			if (neighbors > this.rule.max) return neighbors;
+			
+			if (this.grid[(x+1)+','+(y+1)] !== undefined) neighbors++;
 			return neighbors;
 		}
 	};
