@@ -39,6 +39,7 @@
 			this.game = new Game();
 			this.renderer = new GameRenderer(this.game, this.options);
 			this.renderer.draw();
+			this.updateOptionsSummary();
 		},
 		_tickAndDraw: function() {
 			this.tick++;
@@ -114,15 +115,18 @@
 			});
 			select.selectedIndex = 0;
 			select.onchange = this._handleRuleSelect.bind(this);
+			this.updateOptionsSummary();
 		},
 		_handleRuleSelect: function() {
 			var select = this.elements.ruleSelect;
 			select.blur();
-			this.setRule(select.options[select.selectedIndex].value);			
+			this.setRule(select.options[select.selectedIndex].value);
+			this.updateOptionsSummary();
 		},
 		setRule: function(value) {			
 			this.game.setRuleString(value);			
 			setSelectValue(this.elements.ruleSelect, value);
+			this.updateOptionsSummary();
 		},
 		_setupVisitedSelect: function() {
 			var select = this.elements.visitedSelect;
@@ -169,14 +173,14 @@
 		_setupIntervalSelect: function() {
 			var select = this.elements.intervalSelect;
 			select.options[0] = new Option('Max',    '0');
-			select.options[1] = new Option('~40fps', '40');
-			select.options[1] = new Option('~25fps', '25');
-			select.options[2] = new Option('~10fps', '10');
-			select.options[3] = new Option('~5fps',  '5');
-			select.options[4] = new Option('~3fps',  '3');
-			select.options[5] = new Option('~2fps',  '2');
-			select.options[6] = new Option('~1fps',  '1');
-			select.options[7] = new Option('~0.5fps','0.5');
+			select.options[1] = new Option('≈40fps', '40');
+			select.options[1] = new Option('≈25fps', '25');
+			select.options[2] = new Option('≈10fps', '10');
+			select.options[3] = new Option('≈5fps',  '5');
+			select.options[4] = new Option('≈3fps',  '3');
+			select.options[5] = new Option('≈2fps',  '2');
+			select.options[6] = new Option('≈1fps',  '1');
+			select.options[7] = new Option('≈0.5fps','0.5');
 			select.onchange = this._handleIntervalSelect.bind(this);
 			this.setSpeed(0);
 		},
@@ -192,7 +196,8 @@
 				this.stop();
 				this.start();
 			}
-			setSelectValue(this.elements.intervalSelect, fps)
+			setSelectValue(this.elements.intervalSelect, fps);
+			this.updateOptionsSummary();
 		},
 		_setupBlockSizeSelect: function() {
 			var select = this.elements.blockSizeSelect;
@@ -371,7 +376,14 @@
 		},
 		save: function() {
 			var shape = this.boardToShape();
-			console.log(JSON.stringify(shape.points));			
+			console.log(JSON.stringify(shape.points));
+			return this;
+		},
+		updateOptionsSummary: function() {
+			var rule = getSelectValue(this.elements.ruleSelect).replace(/ .+$/, '');
+			var speed = getSelectText(this.elements.intervalSelect);
+			this.elements.optionsSummary.innerHTML = 'Rule: ' + rule + ', Speed: ' + speed; 
+			return this;
 		},
 		// wow this should be refactored
 		toPng: function() {
@@ -465,6 +477,20 @@
 		}
 		select.selectedIndex = 0;
 		return 0;
+	}
+	
+	function getSelectValue(select) {
+		if (select.selectedIndex < 0) {
+			return '';
+		}
+		return select.options[select.selectedIndex].value;
+	}
+	
+	function getSelectText(select) {
+		if (select.selectedIndex < 0) {
+			return '';
+		}		
+		return select.options[select.selectedIndex].text;
 	}
 	
 	function padRule(rule) {

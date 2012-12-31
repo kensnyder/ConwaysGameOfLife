@@ -14,8 +14,10 @@
 			return this;
 		},
 		addPoint: function addPoint(x,y) {
-			this.grid[x+','+y] = true;
-			this.numPoints++;
+			if (this.grid[x+','+y] === undefined) {				
+				this.grid[x+','+y] = true;
+				this.numPoints++;
+			}
 			return this;
 		},
 		removePoint: function removePoint(x,y) {

@@ -73,6 +73,10 @@ body, select, input {
 	text-decoration: none;
 	color: #000;
 }
+#optionsSummary {
+	font-size: 11px;
+	vertical-align: middle;
+}
 #optionsClose {
 	font-size: 12px;
 	color: #555;
