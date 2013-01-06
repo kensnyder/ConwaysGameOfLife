@@ -32,6 +32,7 @@
 			this._setupBoardClick();
 			this._setupSaveButton();
 			this._setupResetButton();
+			this._setupAutoSize();
 			this._setupPan();
 		},
 		resetGame: function() {
@@ -52,6 +53,15 @@
 				this.renderer.killOffscreenPoints();
 			}
 		},		
+		_setupAutoSize: function() {
+			this.elements.autoSize.onclick = this.autoSize.bind(this);
+		},
+		autoSize: function() {
+			var minmax = this.getBoardMinMax();
+			//this.setBlockSize
+			this.renderer.setBoardSize(Math.round(minmax[1][0] * 1.2), Math.round(minmax[1][1] * 1.2));
+			
+		},
 		_setupPan: function() {
 			document.addEventListener('keyup', this._handleArrowKeys.bind(this));
 		},
@@ -368,17 +378,28 @@
 		_setupSaveButton: function() {
 			this.elements.saveButton.onclick = this.save.bind(this);
 		},
-		boardToShape: function() {
-			var points = this.game.getPoints();
+		getBoardMinMax: function(points) {
 			var min = [Infinity,Infinity];
 			var max = [-Infinity,-Infinity];
-			// first find min and max
+			if (!points) {
+				points = this.game.getPoints();
+			}
+			if (points.length == 0) {
+				return [[0,0],[0,0]];
+			}
 			points.forEach(function(xy) {
 				if (xy[0] < min[0]) min[0] = xy[0];
 				else if (xy[1] < min[1]) min[1] = xy[1];
 				if (xy[0] > max[0]) max[0] = xy[0];
 				else if (xy[1] > max[1]) max[1] = xy[1];
 			});
+			return [min,max];
+		},
+		boardToShape: function() {
+			var points = this.game.getPoints();
+			// first find min and max
+			var minmax = this.getBoardMinMax(points);
+			var min = minmax[0], max = minmax[1];
 			// then gather all the points relative to 0,0
 			var newPoints = [];
 			points.forEach(function(xy) {
@@ -445,7 +466,8 @@
 			renderer.grid.ctx.strokeStyle = renderer.gridlinesColor;
 			GameRenderer.prototype._drawGridLines.call(renderer, 'width'); // vertical lines	
 			GameRenderer.prototype._drawGridLines.call(renderer, 'height'); // horizontal lines
-			window.location.href = renderer.grid.toDataURL('image/png');
+			shape.png = renderer.grid.toDataURL('image/png');
+			return shape;
 		},
 		_setupResetButton: function() {
 			this.elements.resetButton.onclick = this.reset.bind(this);
@@ -456,9 +478,6 @@
 			this.renderer.visitedPoints = {};
 			this.renderer.drawVisitedBoard();
 			this.renderer.draw();
-		},
-		autoSize: function() {
-			
 		},
 		panRatio: function(byRatio) {
 			var byX = Math.round(this.renderer.boardSize.x * byRatio,0);

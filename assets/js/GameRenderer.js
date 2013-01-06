@@ -81,6 +81,26 @@
 			setSize();
 			return canvas;
 		},
+		// move to controls.
+//		setBoardSize: function setBoardSize(width, height) {
+//			var blockSizeX = this.grid.width / width;
+//			var blockSizeY = this.grid.height / height;
+//			var blockSize = Math.min(blockSizeX, blockSizeY);
+//			if (blockSize < 3) {
+//				this.useGridlines = false;
+//			}
+//			else {
+//				// account for gridlines
+//				blockSize -= 1;
+//			}
+//			if (blockSize < 1) {
+//				blockSize = Math.floor(4 * blockSize) / 4;
+//				if (blockSize == 0) {
+//					blockSize = 0.25;
+//				}
+//			}
+//			this.setBlockSize(blockSize);
+//		},
 		setBlockSize: function setBlockSize(pixels) {
 			this.blockSize = pixels;
 			this.boardSize = {

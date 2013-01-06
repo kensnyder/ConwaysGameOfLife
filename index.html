@@ -16,17 +16,28 @@
 		<div id="controls">
 			<a id="infoButton" title="What is Conway's Game of Life?" href="http://www.conwaylife.com/wiki/Conway%27s_Game_of_Life" target="_blank">i</a>
 			<div id="controlsMain">
-				Shape: <select id="seedSelect"></select> &nbsp; &nbsp;
-				<input id="startButton" type="button" /> &nbsp; &nbsp;
-				<input id="resetButton" type="button" value="Reset" /> &nbsp; &nbsp;
-				<input id="saveButton" type="button" value="Save" /> &nbsp; &nbsp;
+				<span class="control">
+					Shape: <select id="seedSelect"></select>
+				</span>
+				<span class="control">
+					<input id="startButton" type="button" />
+				</span>
+				<span class="control">
+					<input id="resetButton" type="button" value="Reset" />
+				</span>
+				<span class="control">
+					<input id="saveButton" type="button" value="Save" />
+				</span>
 			</div>
 			<a id="optionsButton" title="Options..." href="#">⚙ <span id="optionsSummary"></span></a>
 			<div id="options" style="display:none">
 				<table>
 					<tr>
 						<th>Cell Size:</th>
-						<td><select id="blockSizeSelect"></select></td>
+						<td>
+							<select id="blockSizeSelect"></select>
+							<input id="autoSize" type="button" value="Auto" />
+						</td>
 					</tr>
 					<tr>
 						<th>Rule:</th>
@@ -53,7 +64,7 @@
 			</div>
 		</div>
 		<script>
-			if (document.createElement('canvas').getContext || Array.prototype.forEach) {
+			if (document.createElement('canvas').getContext && Array.prototype.forEach) {
 				var controls = new GameControls(
 					document.getElementById('controls'),
 					document.getElementById('board')

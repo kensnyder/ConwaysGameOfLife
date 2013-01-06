@@ -27,6 +27,13 @@ a {
 #controls:hover {
 	opacity: 1;
 }
+.control {
+	margin-right: 12px;
+	vertical-align: middle;
+}
+.control * {
+	vertical-align: middle;
+}
 #options {
 	position: absolute;
 	top: 27px;
@@ -38,6 +45,10 @@ a {
 }
 #options select {
 	font-size: 11px;
+}
+#options input {
+	font-size: 11px;
+	height: 18px;
 }
 #options #ruleSelect {
 	font: 10px Consolas, Monaco, "Courier New", Courier, monospace;
