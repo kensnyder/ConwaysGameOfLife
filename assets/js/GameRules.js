@@ -1,6 +1,10 @@
 (function(exports) {
 	"use strict";
-
+	
+	/**
+	 * The list of game rules to choose from
+	 * @property GameRules
+	 */
 	exports.GameRules = [
 		{
 			rule: "23/3",

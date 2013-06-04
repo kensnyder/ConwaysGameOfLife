@@ -1,6 +1,13 @@
 (function(exports) {
 	"use strict";
 
+	/**
+	 * Class to wire DOM elements to control the game
+	 * @class GameControls
+	 * @constructor
+	 * @param {HTMLElement} controls  A DOM element that contains all the controls
+	 * @param {HTMLElement} board  The DOM element to which to render the board using canvas
+	 */
 	exports.GameControls = function(controls, board) {
 		this.options = {
 			board: board
@@ -9,18 +16,72 @@
 			controls: controls,
 			board: board
 		};
-		Array.prototype.slice.call(controls.getElementsByTagName('*')).forEach(function(element) {
+		[].slice.call(controls.getElementsByTagName('*')).forEach(function(element) {
 			if (!element.id) {
 				return;
 			}
 			this.elements[element.id] = element;
 		}.bind(this));
-		this.resetGame();
+		this.initGame();
 		this.setup();
 	};
 
+	/**
+	 * The current generation number
+	 * @property {Number} tick
+	 */
+	/**
+	 * The Game object
+	 * @property {Game} game
+	 */
+	/**
+	 * The GameRenderer object
+	 * @property {GameRenderer} renderer
+	 */
+	/**
+	 * The game options set by the DOM controls
+	 * @property {Object} options
+	 * @property {HTMLElement} options.board  The DOM element to which to render the board using canvas
+	 * @property {Number} options.interval  The number of milliseconds to wait between generations
+	 */
+	/**
+	 * The text to show on the start button
+	 * @property {String} startButtonText
+	 */
+	/**
+	 * The text to show on the pause button
+	 * @property {String} pauseButtonText
+	 */
+	/**
+	 * The DOM elements that control the game, indexed by id attribute
+	 * @property {Object} elements
+	 * @property {HTMLElement} elements.autoSize  The button that triggers auto sizing board to fit current pattern
+	 * @property {HTMLElement} elements.seedSelect  The drop down to choose a starting shape
+	 * @property {HTMLElement} elements.ruleSelect  The drop down to set the birth-death rule
+	 * @property {HTMLElement} elements.intervalSelect  The drop down to set number of milliseconds to wait between generations
+	 * @property {HTMLElement} elements.visitedSelect  The drop down to set the color to use to paint "visited" points
+	 * @property {HTMLElement} elements.gridlinesSelect  The drop down to enable and disable gridlines
+	 * @property {HTMLElement} elements.blocksizeSelect  The drop down to set size of each block
+	 * @property {HTMLElement} elements.clearButton  The button to clear all points from the board
+	 * @property {HTMLElement} elements.resetButton  The button to reset the board to its starting state
+	 * @property {HTMLElement} elements.saveButton  The button that saves the current state
+	 * @property {HTMLElement} elements.startButton  The button that starts the game
+	 * @property {HTMLElement} elements.optionsSummary  The element that shows a summary of the currently chosen options
+	 * @property {HTMLElement} elements.optionsButton  The element that when clicked opens the list of options
+	 * @property {HTMLElement} elements.options  The element that contains the list of options
+	 * @property {HTMLElement} elements.optionsClose  The element that when clicked hides the list of options
+	 * @property {HTMLElement} elements.board  The element that contains the canvas board
+	 */
 	exports.GameControls.prototype = {
-		setup: function() {
+		/**
+		 * Setup all the controls
+		 * @method setup
+		 */
+		setup: function setup() {
+			this.initialGrid = null;
+			this.keyControlsEnabled = true;
+			this.startButtonText = 'Start \u25B6';
+			this.pauseButtonText = 'Pause \u220E\u220E';			
 			this._setupSeedSelect();
 			this._setupIntervalSelect();
 			this._setupBlockSizeSelect();
@@ -31,18 +92,30 @@
 			this._setupStartButton();
 			this._setupBoardClick();
 			this._setupSaveButton();
+			this._setupClearButton();
 			this._setupResetButton();
 			this._setupAutoSize();
 			this._setupPan();
 		},
-		resetGame: function() {
+		/**
+		 * Initialize the Game object and the GameRenderer object
+		 * @method initGame
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		initGame: function initGame() {
 			this.tick = 0;
 			this.game = new Game();
 			this.renderer = new GameRenderer(this.game, this.options);
 			this.renderer.draw();
 			this.updateOptionsSummary();
-		},
-		_tickAndDraw: function() {
+			return this;
+		},		
+		/**
+		 * Increment the generation and draw the new board
+		 * @method _tickAndDraw
+		 */
+		_tickAndDraw: function _tickAndDraw() {
 			this.tick++;
 			this.game.tick();
 			this.renderer.draw();
@@ -53,19 +126,64 @@
 				this.renderer.killOffscreenPoints();
 			}
 		},		
-		_setupAutoSize: function() {
+		/**
+		 * Setup the auto size button
+		 * @method _setupAutoSize
+		 */
+		_setupAutoSize: function _setupAutoSize() {
 			this.elements.autoSize.onclick = this.autoSize.bind(this);
 		},
-		autoSize: function() {
+		/**
+		 * Automatically size the board to fit all the points
+		 * @method autoSize
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		autoSize: function autoSize() {
 			var minmax = this.getBoardMinMax();
-			//this.setBlockSize
+			// TODO: this.setBlockSize
 			this.renderer.setBoardSize(Math.round(minmax[1][0] * 1.2), Math.round(minmax[1][1] * 1.2));
-			
+			// TODO: this pan
+			return this;
 		},
-		_setupPan: function() {
+		/**
+		 * Disable key listeners (e.g. if there is an input box on the screen)
+		 * @method disableKeyControls
+		 * @return {GameControls}
+		 * @chainable
+		 */		
+		disableKeyControls: function disableKeyControls() {
+			this.keyControlsEnabled = false;
+			return this;
+		},
+		/**
+		 * Enable key listeners
+		 * @method enableKeyControls
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		enableKeyControls: function enableKeyControls() {
+			this.keyControlsEnabled = true;
+			return this;
+		},
+		/**
+		 * Set up the panning controls (arrow keys and mousewheel)
+		 * @method _setupPan
+		 */
+		_setupPan: function _setupPan() {
 			document.addEventListener('keyup', this._handleArrowKeys.bind(this));
+			document.addEventListener('mousewheel', this._handleWheel.bind(this));
+			document.addEventListener('DOMMouseScroll', this._handleWheel.bind(this));
 		},
-		_handleArrowKeys: function(evt) {
+		/**
+		 * Respond to arrow keys by panning the board
+		 * @method _handleArrowKeys
+		 * @param {HTMLEvent} evt  The keyup event
+		 */
+		_handleArrowKeys: function _handleArrowKeys(evt) {
+			if (!this.keyControlsEnabled) {
+				return;
+			}
 			var incX = Math.round(this.renderer.boardSize.x * 0.1);
 			var incY = Math.round(this.renderer.boardSize.y * 0.1);
 				 if (evt.which == 37) this.pan(-incX,0); // left
@@ -73,7 +191,48 @@
 			else if (evt.which == 39) this.pan(incX,0);  // right
 			else if (evt.which == 40) this.pan(0,incY);  // down			
 		},
-		_setupSeedSelect: function() {
+		/**
+		 * Respond to the mousewheel by panning the board (vertically; with shift: horizontally)
+		 * @method _handleWheel
+		 * @param {HTMLEvent} evt  The mousewheel or DOMMouseScroll event
+		 */
+		_handleWheel: function _handleWheel(evt) {
+			if (!this.keyControlsEnabled) {
+				return;
+			}
+			if (evt.ctrlKey) {
+				return;
+			}
+			if (!evt.target.tagName || evt.target.tagName.toUpperCase() != 'CANVAS') {
+				return;
+			}
+			evt.preventDefault();
+			var dir = evt.shiftKey ? 'x' : 'y';
+			var inc = Math.round(this.renderer.boardSize[dir] * 0.05);
+			inc = inc || 1;
+			var delta = evt.wheelDelta || evt.detail;
+			if (delta > 0) {
+				if (dir == 'y') {
+					this.pan(0, inc);
+				}
+				else {
+					this.pan(inc, 0);
+				}
+			}
+			else if (delta < 0) {
+				if (dir == 'y') {
+					this.pan(0, -inc);
+				}
+				else {
+					this.pan(-inc, 0);
+				}
+			}
+		},
+		/**
+		 * Set up the seed select drop down
+		 * @method _setupSeedSelect
+		 */
+		_setupSeedSelect: function _setupSeedSelect() {
 			var select = this.elements.seedSelect;
 			var idx = 0;
 			select.options[idx++] = new Option('','');
@@ -87,7 +246,14 @@
 			select.selectedIndex = 0;
 			select.onchange = this._handleSeedSelect.bind(this);
 		},
-		seed: function(ratio) {
+		/**
+		 * Seed the board with random points
+		 * @method seed
+		 * @param {Number} ratio  A number between 0 and 1 representing how many of the points to randomly pick
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		seed: function seed(ratio) {
 			var x, y, numPoints = Math.floor(this.renderer.boardSize.x * this.renderer.boardSize.y * ratio * 0.60 * 0.60);
 			for (var i = 0; i < numPoints; i++) {
 				x = Math.floor(this.renderer.boardSize.x * Math.random() * 0.60) + Math.floor(this.renderer.boardSize.x * 0.20);
@@ -101,11 +267,15 @@
 			}
 			return this;
 		},
-		_handleSeedSelect: function() {
+		/**
+		 * Respond to the seed select drop down
+		 * @method _handleSeedSelect
+		 */
+		_handleSeedSelect: function _handleSeedSelect() {
 			var select = this.elements.seedSelect;
 			select.blur();
 			this.stop();
-			this.reset();
+			this.clear();
 			var value = select.options[select.selectedIndex].value;
 			if (value) {
 				var parts = value.split('-');
@@ -114,11 +284,22 @@
 			this.renderer.draw();
 			select.selectedIndex = 0;
 		},		
+		/**
+		 * Add a shape to the game board
+		 * @method addShape
+		 * @param {String} name  The name of the shape found in the GameShapeLibrary array
+		 * @return {GameControls}
+		 * @chainable
+		 */
 		addShape: function(name) {	
 			GameShapes.add(this, name, this.renderer.boardSize.x, this.renderer.boardSize.y);
 			return this;
 		},	
-		_setupRuleSelect: function() {
+		/**
+		 * Listen for rule select drop down changes
+		 * @method _setupRuleSelect
+		 */
+		_setupRuleSelect: function _setupRuleSelect() {
 			var select = this.elements.ruleSelect;
 			select.options[0] = new Option('Custom...', 'custom');
 			GameRules.forEach(function(rule, i) {
@@ -128,32 +309,45 @@
 			this.setRule('23/3');
 			this.updateOptionsSummary();
 		},
-		_handleRuleSelect: function() {
+		/**
+		 * Respond to rule selection
+		 * @method _handleRuleSelect
+		 */
+		_handleRuleSelect: function _handleRuleSelect() {
 			var select = this.elements.ruleSelect;
 			select.blur();
 			this.setRule(getSelectValue(select));
 			this.updateOptionsSummary();
 		},
-		setRule: function(value) {
-			var lastValue = getSelectValue(this.elements.ruleSelect);
+		/**
+		 * Set the rulestring 
+		 * @method setRule
+		 * @param {String} value  The rulestring (e.g. "23/3" or "B3/S23")
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		setRule: function setRule(value) {
 			if (value == 'custom') {
 				value = prompt('Enter rulestring: (e.g. "23/3" or "B3/S23")');
 				if (!value) {
-					this.setRule(lastValue);
-					return;
+					return this;
 				}
 				if (!value.match(/^B?[0-8]*\/S?[0-8]*$/)) {
 					alert('Invalid rulestring. Use the format "23/3" or "B3/S23".');
-					this.setRule(lastValue);
-					return;
+					return this;
 				}
 				this.elements.ruleSelect.options[this.elements.ruleSelect.options.length] = new Option(value, value);
 			}
 			this.game.setRuleString(value);			
 			setSelectValue(this.elements.ruleSelect, value);
 			this.updateOptionsSummary();
+			return this;
 		},
-		_setupVisitedSelect: function() {
+		/**
+		 * Listen for change to visited select
+		 * @method _setupVisitedSelect
+		 */
+		_setupVisitedSelect: function _setupVisitedSelect() {
 			var select = this.elements.visitedSelect;
 			var idx = 0;
 			select[idx] = new Option('(none)','');
@@ -180,7 +374,11 @@
 				}
 			}.bind(this);
 		},
-		_setupOptionsButton: function() {
+		/**
+		 * Listen for a click on the options button
+		 * @method _setupOptionsButton
+		 */
+		_setupOptionsButton: function _setupOptionsButton() {
 			var button = this.elements.optionsButton;
 			var div = this.elements.options;
 			button.addEventListener('click', function(evt) {
@@ -195,48 +393,72 @@
 				div.style.display = 'none';
 			}, false);
 		},
-		_setupIntervalSelect: function() {
+		/**
+		 * Listen for a change in the interval drop down
+		 * @method _setupIntervalSelect
+		 */
+		_setupIntervalSelect: function _setupIntervalSelect() {
 			var select = this.elements.intervalSelect;
-			select.options[0] = new Option('Max',    '0');
-			select.options[1] = new Option('≈40fps', '40');
-			select.options[1] = new Option('≈25fps', '25');
-			select.options[2] = new Option('≈10fps', '10');
-			select.options[3] = new Option('≈5fps',  '5');
-			select.options[4] = new Option('≈3fps',  '3');
-			select.options[5] = new Option('≈2fps',  '2');
-			select.options[6] = new Option('≈1fps',  '1');
-			select.options[7] = new Option('≈1/2fps','0.5');
+			select.options[0] = new Option('Max',    '0.00');
+			select.options[1] = new Option('≈40fps', '40.00');
+			select.options[1] = new Option('≈25fps', '25.00');
+			select.options[2] = new Option('≈10fps', '10.00');
+			select.options[3] = new Option('≈5fps',  '5.00');
+			select.options[4] = new Option('≈3fps',  '3.00');
+			select.options[5] = new Option('≈2fps',  '2.00');
+			select.options[6] = new Option('≈1fps',  '1.00');
+			select.options[7] = new Option('≈1/2fps','0.50');
 			select.onchange = this._handleIntervalSelect.bind(this);
 			this.setSpeed(0);
 		},
-		_handleIntervalSelect: function() {
+		/**
+		 * Respond to a change in the interval drop down
+		 * @method _handleIntervalSelect
+		 */
+		_handleIntervalSelect: function _handleIntervalSelect() {
 			var select = this.elements.intervalSelect;
 			select.blur();
 			this.setSpeed(select.options[select.selectedIndex].value);
 		},
-		setSpeed: function(fps) {
+		/**
+		 * Set the number of frames per second to render
+		 * @method setSpeed
+		 * @param {Number} fps  Set to 0 for max
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		setSpeed: function setSpeed(fps) {
 			fps = +fps;
 			this.options.interval = fps < 1 ? 0 : (1000 / fps) - 4;
 			if (this.isRunning) {
 				this.stop();
 				this.start();
 			}
-			setSelectValue(this.elements.intervalSelect, fps);
+			setSelectValue(this.elements.intervalSelect, fps.toFixed(2));
 			this.updateOptionsSummary();
+			return this;
 		},
-		_setupBlockSizeSelect: function() {
+		/**
+		 * Listen for changes to the block size drop down
+		 * @method _setupBlockSizeSelect
+		 */
+		_setupBlockSizeSelect: function _setupBlockSizeSelect() {
 			var select = this.elements.blockSizeSelect;
 			var idx = 0;
 			select.options[idx++] = new Option('1/4','0.25');
-			select.options[idx++] = new Option('1/3','0.333333333333');
-			select.options[idx++] = new Option('1/2','0.5');
+			select.options[idx++] = new Option('1/3','0.33');
+			select.options[idx++] = new Option('1/2','0.50');
 			for (var hw = 1; hw <= 20; hw++) {
-				select.options[idx++] = new Option(hw, hw);
+				select.options[idx++] = new Option(hw, hw + '.00');
 			}
 			select.onchange = this._handleBlockSizeSelect.bind(this);
 			this.setBlockSize(6);
 		},
-		_handleBlockSizeSelect: function() {
+		/**
+		 * Respond to a change in block size drop down
+		 * @method _handleBlockSizeSelect
+		 */
+		_handleBlockSizeSelect: function _handleBlockSizeSelect() {
 			var select = this.elements.blockSizeSelect;
 			select.blur();
 			var newSize = select.options[select.selectedIndex].value;
@@ -245,19 +467,44 @@
 			}
 			this.setBlockSize(newSize);
 		},
-		setBlockSize: function(size) {
+		/**
+		 * Set the size of each block
+		 * @method setBlockSize
+		 * @param {Number} size  The size of the block in pixels
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		setBlockSize: function setBlockSize(size) {
 			size = +size;
 			var oldBoardSize = this.renderer.boardSize;
 			this.renderer.setBlockSize(size);
 			var newBoardSize = this.renderer.boardSize;
 			this.panForResize(oldBoardSize, newBoardSize);
 			this.renderer.drawAll();
-			setSelectValue(this.elements.blockSizeSelect, size);
+			setSelectValue(this.elements.blockSizeSelect, size.toFixed(2));
+			return this;
 		},
-		panForResize: function(oldBoardSize, newBoardSize) {
+		/**
+		 * Pan the board such as to accomodate a board resize
+		 * @method panForResize
+		 * @param {Object} oldBoardSize
+		 * @param {Object} oldBoardSize.x  The width of the old board
+		 * @param {Object} oldBoardSize.y  The height of the old board
+		 * @param {Object} newBoardSize
+		 * @param {Object} newBoardSize.x  The width of the new board
+		 * @param {Object} newBoardSize.y  The height of the new board
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		panForResize: function panForResize(oldBoardSize, newBoardSize) {
 			this.pan(Math.floor(oldBoardSize.x - newBoardSize.x), Math.floor(oldBoardSize.y - newBoardSize.y));
+			return this;
 		},
-		_setupGridlinesSelect: function() {
+		/**
+		 * Listen to changes in a gridlines select and populate options
+		 * @method _setupGridlinesSelect
+		 */
+		_setupGridlinesSelect: function _setupGridlinesSelect() {
 			var select = this.elements.gridlinesSelect;
 			select.options[0] = new Option('On', '1');
 			select.options[1] = new Option('Off', '0');
@@ -265,7 +512,11 @@
 			this.enableGridlines();
 			select.onchange = this._handleGridlinesSelect.bind(this);
 		},
-		_handleGridlinesSelect: function() {
+		/**
+		 * Respond to change in gridlines select
+		 * @method _handleGridlinesSelect
+		 */
+		_handleGridlinesSelect: function _handleGridlinesSelect() {
 			var select = this.elements.gridlinesSelect;
 			this.renderer.gridlinesColor = '#d0d0d0';
 			if (select.selectedIndex === 0) {
@@ -283,9 +534,15 @@
 			}
 			select.blur();
 		},
-		enableGridlines: function() {
+		/**
+		 * Enable gridlines on the board
+		 * @method enableGridlines
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		enableGridlines: function enableGridlines() {
 			if (this.renderer.useGridlines == 1) {
-				return;
+				return this;
 			}
 			var oldBoardSize = this.renderer.boardSize;
 			this.renderer.useGridlines = 1;
@@ -293,10 +550,17 @@
 			var newBoardSize = this.renderer.boardSize;
 			this.panForResize(oldBoardSize, newBoardSize);
 			setSelectValue(this.elements.gridlinesSelect, '1');
+			return this;
 		},
-		disableGridlines: function() {
+		/**
+		 * Disable gridlines on the board
+		 * @method disableGridlines
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		disableGridlines: function disableGridlines() {
 			if (this.renderer.useGridlines == 0) {
-				return;
+				return this;
 			}
 			var oldBoardSize = this.renderer.boardSize;
 			this.renderer.useGridlines = 0;
@@ -304,20 +568,31 @@
 			var newBoardSize = this.renderer.boardSize;		
 			this.panForResize(oldBoardSize, newBoardSize);
 			setSelectValue(this.elements.gridlinesSelect, '0');
+			return this;
 		},
-		_setupStartButton: function() {
+		/**
+		 * Listen for a click on the start/pause button and the spacebar
+		 * @method _setupStartButton
+		 */
+		_setupStartButton: function _setupStartButton() {
 			var button = this.elements.startButton;
 			var handle = this._handleStartButton.bind(this);
 			button.onclick = handle;
-			document.addEventListener('keyup', function(evt) {
-				if (evt.which != 13) {
+			window.addEventListener('keyup', function(evt) {
+				if (!this.keyControlsEnabled) {
 					return;
 				}
-				handle();
-			}, false);
+				if (evt.which == 32 || evt.which == 13) {
+					handle(evt);
+				}
+			}.bind(this), false);
 			this.stop();
 		},
-		_handleStartButton: function() {
+		/**
+		 * Respond to start button or enter/spacebar
+		 * @method _handleStartButton
+		 */
+		_handleStartButton: function _handleStartButton() {
 			var button = this.elements.startButton;
 			button.blur();
 			if (this.isRunning) {
@@ -330,22 +605,43 @@
 				this.start();
 			}			
 		},
+		/**
+		 * Pause the game
+		 * @method stop
+		 * @return {GameControls}
+		 * @chainable
+		 */
 		stop: function stop() {
 			var button = this.elements.startButton;
-			button.value = 'Start \u25B6';
+			button.value = this.startButtonText;
+			document.body.className = document.body.className.replace(' game-started', '') + ' game-paused';
 			this.isRunning = false;
 			clearInterval(this._intervalId);
 			return this;
-		},		
-		start: function() {
+		},	
+		/**
+		 * Start/unpause the game
+		 * @method start
+		 * @return {GameControls}
+		 * @chainable
+		 */		
+		start: function start() {
+			if (this.initialGrid === null && this.game.numPoints > 0) {
+				this.initialGrid = JSON.parse(JSON.stringify(this.game.grid));
+			}
 			var button = this.elements.startButton;
-			button.value = 'Pause \u220E\u220E';
+			button.value = this.pauseButtonText;
+			document.body.className = document.body.className.replace(' game-paused', '') + ' game-started';
 			this.isRunning = true;
 			this._startTime = +new Date;
 			this._intervalId = setInterval(this._tickAndDraw.bind(this), this.options.interval);
 			return this;
-		},		
-		_setupBoardClick: function() {
+		},
+		/**
+		 * Listen for clicks and mousedown on the board for drawing and erasing points
+		 * @method _setupBoardClick
+		 */
+		_setupBoardClick: function _setupBoardClick() {
 			var board = this.elements.board;
 			this.inMousedown = false;
 			var drawAtCursor = function(evt) {
@@ -357,7 +653,8 @@
 					evt.pageY / 
 					(this.renderer.blockSize + (this.renderer.useGridlines ? 1 : 0))
 				);
-				if (evt.type == 'click' && this.game.isAlive(x,y) && !this.inMousedown) {
+				if (evt.button == 2) {
+					evt.preventDefault();
 					this.game.removePoint(x,y);
 				}
 				else {
@@ -365,6 +662,7 @@
 				}
 				this.renderer.draw();
 			}.bind(this);
+			board.oncontextmenu = drawAtCursor;
 			board.onclick = drawAtCursor;
 			board.onmousedown = function() {
 				setTimeout(function(){this.inMousedown = true}.bind(this),500);
@@ -375,10 +673,20 @@
 				board.onmousemove = null;
 			}.bind(this);
 		},
-		_setupSaveButton: function() {
+		/**
+		 * Listen for save button click
+		 * @method _setupSaveButton
+		 */
+		_setupSaveButton: function _setupSaveButton() {
 			this.elements.saveButton.onclick = this.save.bind(this);
 		},
-		getBoardMinMax: function(points) {
+		/**
+		 * Get the minimum [x,y] and maximum [x,y] that the alive points span
+		 * @method getBoardMinMax
+		 * @param {Array} [points]  An array of [x,y] coordinates; defaults to the this.game.getPoints()
+		 * @return {Array}  Array of min max in the form [[a,b],[x,y]]
+		 */
+		getBoardMinMax: function getBoardMinMax(points) {
 			var min = [Infinity,Infinity];
 			var max = [-Infinity,-Infinity];
 			if (!points) {
@@ -388,14 +696,19 @@
 				return [[0,0],[0,0]];
 			}
 			points.forEach(function(xy) {
-				if (xy[0] < min[0]) min[0] = xy[0];
-				else if (xy[1] < min[1]) min[1] = xy[1];
-				if (xy[0] > max[0]) max[0] = xy[0];
+				if      (xy[0] < min[0]) min[0] = xy[0];
+				else if (xy[0] > max[0]) max[0] = xy[0];
+				if      (xy[1] < min[1]) min[1] = xy[1];
 				else if (xy[1] > max[1]) max[1] = xy[1];
 			});
 			return [min,max];
 		},
-		boardToShape: function() {
+		/**
+		 * Return the points and size of the current board state
+		 * @method boardToShape
+		 * @return {Object}  Contains key size with [width,height] and key points, an array of points
+		 */
+		boardToShape: function boardToShape() {
 			var points = this.game.getPoints();
 			// first find min and max
 			var minmax = this.getBoardMinMax(points);
@@ -406,85 +719,170 @@
 				newPoints.push([xy[0]-min[0],xy[1]-min[1]]);
 			});
 			return {
-				size: [max[0]-min[0], max[1]-min[1]],
+				size: [max[0]-min[0]+1, max[1]-min[1]+1],
 				points: newPoints
 			};
 		},
-		save: function() {
+		/**
+		 * console.log the points in the current board state and return them
+		 * @method save
+		 */
+		save: function save() {
 			var shape = this.boardToShape();
-			console.log(JSON.stringify(shape.points));
-			return this;
+			console.log(JSON.stringify(shape));
+			return shape;
 		},
-		updateOptionsSummary: function() {
+		/**
+		 * Update the text in the options summary element based on current game parameters
+		 * @method updateOptionsSummary
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		updateOptionsSummary: function updateOptionsSummary() {
 			var rule = getSelectValue(this.elements.ruleSelect).replace(/ .+$/, '');
 			var speed = getSelectText(this.elements.intervalSelect);
 			this.elements.optionsSummary.innerHTML = 'Rule: ' + rule + ', Speed: ' + speed; 
 			return this;
 		},
-		// wow this should be refactored
-		toPng: function() {
+		/**
+		 * Get the board size, blocksize, and gridline state to use to render the current board state to png
+		 * For example, a larger board has smaller blocks and no gridlines
+		 * @method getPngOptions
+		 * @param {Object} shape  A shape as in that returned by this.boardToShape
+		 * @return {Object}  contains keys maxBoardSize, blockSize, useGridlines
+		 */
+		getPngOptions: function getPngOptions(shape) {
+			var largestSide = Math.max(shape.size[0], shape.size[1]);
 			var sizes = [
 				{
-					maxBoardSize: 25,
+					maxBoardSize: 28,
 					blockSize: 6,
-					useGridlines: true
+					useGridlines: 1
 				},
 				{
-					maxBoardSize: 50,
+					maxBoardSize: 49,
 					blockSize: 3,
-					useGridlines: true
+					useGridlines: 1
 				},
 				{
 					maxBoardSize: 100,
 					blockSize: 2,
-					useGridlines: false
+					useGridlines: 0
 				},
 				{
 					maxBoardSize: Infinity,
 					blockSize: 1,
-					useGridlines: false
+					useGridlines: 0
 				}
 			];
-			
+			for (var i = 0; i < sizes.length; i++) {
+				if (largestSide <= sizes[i].maxBoardSize) {
+					return sizes[i];
+				}
+			}
+		},
+		/**
+		 * Return the shape complete with png data URI representing the current board state
+		 * @method toPng
+		 * @params {Object} options  with keys maxBoardSize, blockSize, useGridlines
+		 * @return {Object}  with keys size, points, png
+		 */
+		toPng: function toPng(options) {
 			var shape = this.boardToShape();
+			options = $.extend(this.getPngOptions(shape), options || {});
 			var renderer = {};
 			// build up an object comaptible with GameRenderer
-			renderer.useGridlines = true;
+			renderer.useGridlines = options.useGridlines;
 			renderer.gridlinesColor = '#d0d0d0';
 			renderer.drawVisited = false;
 			renderer.grid = document.createElement('canvas');
 			renderer.grid.ctx = renderer.grid.getContext('2d');
-			renderer.grid.width = (shape.size[0]+3) * 7 + 1;
-			renderer.grid.height = (shape.size[1]+3) * 7 + 1;
+			renderer.grid.width = (shape.size[0] * (options.blockSize + options.useGridlines)) + 1;
+			renderer.grid.height = (shape.size[1] * (options.blockSize + options.useGridlines)) + 1;
 			renderer.board = renderer.grid;
-			renderer.blockSize = 6;
+			renderer.blockSize = options.blockSize;
 			renderer.game = {grid:{}};
 			shape.points.forEach(function(xy) {
-				renderer.game.grid[(xy[0]+1)+','+(xy[1]+1)] = 1;
+				renderer.game.grid[xy[0]+','+xy[1]] = 1;
 			});
 			GameRenderer.prototype.drawBoard.call(renderer);
 			renderer.grid.ctx.strokeStyle = renderer.gridlinesColor;
-			GameRenderer.prototype._drawGridLines.call(renderer, 'width'); // vertical lines	
-			GameRenderer.prototype._drawGridLines.call(renderer, 'height'); // horizontal lines
+			if (renderer.useGridlines) {
+				GameRenderer.prototype._drawGridLines.call(renderer, 'width'); // vertical lines	
+				GameRenderer.prototype._drawGridLines.call(renderer, 'height'); // horizontal lines
+			}
 			shape.png = renderer.grid.toDataURL('image/png');
 			return shape;
 		},
-		_setupResetButton: function() {
+		/**
+		 * Setup listener for click on clear button
+		 * @method _setupClearButton
+		 */
+		_setupClearButton: function _setupClearButton() {
+			this.elements.clearButton.onclick = this.clear.bind(this);
+		},
+		/**
+		 * Setup listener for click on clear button
+		 * @method _setupResetButton
+		 */		
+		_setupResetButton: function _setupResetButton() {
 			this.elements.resetButton.onclick = this.reset.bind(this);
 		},
-		reset: function() {
+		/**
+		 * Clear all points from the board
+		 * @method clear
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		clear: function clear() {
 			this.stop();
-			this.game.reset();
+			this.game.clear();
 			this.renderer.visitedPoints = {};
 			this.renderer.drawVisitedBoard();
 			this.renderer.draw();
+			this.initialGrid = null;
+			return this;
 		},
-		panRatio: function(byRatio) {
+		/**
+		 * Reset to initial state before first start
+		 * @method reset
+		 * @return {GameControls}
+		 * @chainable
+		 */		
+		reset: function reset() {
+			this.stop();
+			this.game.clear();
+			this.renderer.visitedPoints = {};
+			// set to initialGrid
+			if (typeof this.initialGrid == 'object') {
+				this.game.setGrid(this.initialGrid);
+			}
+			this.renderer.drawVisitedBoard();
+			this.renderer.draw();
+			return this;
+		},
+		/**
+		 * Pan by the given ratio
+		 * @method panRatio
+		 * @param {Number} byRatio  A number between 0 and 1 representing how many blocks to pan left (negative number) or right (positive number)
+		 * @return {GameControls}
+		 * @chainable
+		 */
+		panRatio: function panRatio(byRatio) {
 			var byX = Math.round(this.renderer.boardSize.x * byRatio,0);
 			var byY = Math.round(this.renderer.boardSize.y * byRatio,0);
 			this.pan(byX, byY);
+			return this;
 		},
-		pan: function(byX, byY) {
+		/**
+		 * Pan by the given number of blocks
+		 * @method panRatio
+		 * @param {Number} byX  The number of blocks to pan left or right
+		 * @param {Number} byY  The number of blocks to pan up or down
+		 * @return {GameControls}
+		 * @chainable
+		 */		
+		pan: function pan(byX, byY) {
 			var newGrid = {}, xy;
 			for (var point in this.game.grid) {
 				xy = point.split(',');
@@ -499,12 +897,15 @@
 			this.renderer.visitedPoints = newVisited;
 			this.renderer.drawVisitedBoard();
 			this.renderer.draw();
+			return this;
 		}
 	};
 	
+	// helper to set a select element to the given value
 	function setSelectValue(select, toValue) {
+		toValue = '' + toValue;
 		for (var i = 0, len = select.length; i < len; i++) {
-			if (select.options[i].value == toValue) {
+			if (select.options[i].value === toValue) {
 				select.selectedIndex = i;
 				return i;
 			}
@@ -513,6 +914,7 @@
 		return 0;
 	}
 	
+	// helper to get the value of a select element
 	function getSelectValue(select) {
 		if (select.selectedIndex < 0) {
 			return '';
@@ -520,6 +922,7 @@
 		return select.options[select.selectedIndex].value;
 	}
 	
+	// helper to get the display text for the given select element
 	function getSelectText(select) {
 		if (select.selectedIndex < 0) {
 			return '';
@@ -527,6 +930,7 @@
 		return select.options[select.selectedIndex].text;
 	}
 	
+	// helper to pad the rulestring so that they all have the same length
 	function padRule(rule) {
 		var full = '           ';
 		return rule + full.slice(rule.length).replace(/ /g, '\xA0');

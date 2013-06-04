@@ -1,6 +1,13 @@
 (function(exports) {
 	"use strict";
 
+	/**
+	 * Render the game state to canvas
+	 * @class GameRenderer
+	 * @constructor
+	 * @param {Game} game  The game to render
+	 * @param {Object} options  The options to use
+	 */
 	exports.GameRenderer = function(game, options) {
 		this.game = game;
 		this.container = options.board;
@@ -14,12 +21,54 @@
 		this.perf = {};
 	}
 
+	/**
+	 * The Game object
+	 * @property {Game} game
+	 */
+	/**
+	 * The container to which to add the canvas elements
+	 * @property {HTMLElement} container
+	 */
+	/**
+	 * True to use gridlines
+	 * @property {Boolean} useGridlines
+	 */
+	/**
+	 * Hex code or rgb code to use as gridlines color
+	 * @property {String} gridlinesColor
+	 */
+	/**
+	 * True to draw visited points
+	 * @property {Boolean} drawVisited
+	 */
+	/**
+	 * Hex code or rgb code to use as color of visited points
+	 * @property {String} visitedColor
+	 */
+	/**
+	 * Performance metrics such as fps
+	 * @param {Object} perf
+	 * @param {Object} perf.lastDrawTime  Millisecond timestamp of beginning of last render
+	 * @param {Object} perf.fps  The current frames-per-second measure
+	 * @param {Object} perf.lastGeneration  The generation number since the last perf check
+	 */
 	GameRenderer.prototype = {
+		/**
+		 * Render the board
+		 * @method draw
+		 * @return {GameRenderer}
+		 * @chainable
+		 */
 		draw: function draw() {
 			this.drawBoard();
 			this.drawStats();
 			return this;
 		},
+		/**
+		 * Get the current measure of frames per second
+		 * @method getFps
+		 * @return {Number}
+		 */
 		getFps: function getFps() {
 			var elapsed, now;
 			if (this.game.numPoints === 0) {
@@ -44,6 +93,12 @@
 			}
 			return this.perf.fps;
 		},
+		/**
+		 * Create the canvas elements and setup listeners for window resizing
+		 * @method setup
+		 * @return {GameRenderer}
+		 * @chainable
+		 */
 		setup: function setup() {
 			this.container.innerHTML = '';
 			// grid canvas
@@ -59,15 +114,34 @@
 			window.addEventListener('resize', this.drawBoard.bind(this), false);
 			return this;
 		},
+		/**
+		 * Render a blank board
+		 * @method clear
+		 * @return {GameRenderer}
+		 * @chainable
+		 */
 		clear: function clear() {
 			this.visitedPoints = {};
 			this.drawAll();
+			return this;
 		},
-		drawAll: function() {
+		/**
+		 * Render all three boards: grid, visited board, points board
+		 * @method drawAll
+		 * @return {GameRenderer}
+		 * @chainable
+		 */		
+		drawAll: function drawAll() {
 			this.drawGrid();
 			this.drawVisitedBoard();
 			this.drawBoard();			
+			return this;
 		},
+		/**
+		 * Create a canvas element, append it to our container, set to largest possible size, and listen for window resize
+		 * @method _makeCanvas
+		 * @return {HTMLElement}  The canvas element
+		 */
 		_makeCanvas: function _makeCanvas() {
 			var canvas = document.createElement('canvas');
 			canvas.style.position = 'absolute';
@@ -81,33 +155,27 @@
 			setSize();
 			return canvas;
 		},
-		// move to controls.
-//		setBoardSize: function setBoardSize(width, height) {
-//			var blockSizeX = this.grid.width / width;
-//			var blockSizeY = this.grid.height / height;
-//			var blockSize = Math.min(blockSizeX, blockSizeY);
-//			if (blockSize < 3) {
-//				this.useGridlines = false;
-//			}
-//			else {
-//				// account for gridlines
-//				blockSize -= 1;
-//			}
-//			if (blockSize < 1) {
-//				blockSize = Math.floor(4 * blockSize) / 4;
-//				if (blockSize == 0) {
-//					blockSize = 0.25;
-//				}
-//			}
-//			this.setBlockSize(blockSize);
-//		},
+		/**
+		 * Set the size of the block in pixels
+		 * @method setBlockSize
+		 * @params {Number} pixels
+		 * @return {GameRenderer}
+		 * @chainable
+		 */
 		setBlockSize: function setBlockSize(pixels) {
 			this.blockSize = pixels;
 			this.boardSize = {
 				x: Math.floor(this.grid.width / (this.blockSize + (this.useGridlines ? 1 : 0))),
 				y: Math.floor(this.grid.height / (this.blockSize + (this.useGridlines ? 1 : 0)))
 			};
+			return this;
 		},
+		/**
+		 * Draw all the gridlines on the gridlines canvas
+		 * @method drawGrid
+		 * @return {GameRenderer}
+		 * @chainable
+		 */		
 		drawGrid: function drawGrid() {
 			this.grid.ctx.clearRect(0, 0, this.grid.width, this.grid.height);
 			if (!this.useGridlines) {
@@ -116,7 +184,13 @@
 			this.grid.ctx.strokeStyle = this.gridlinesColor;
 			this._drawGridLines('width'); // vertical lines	
 			this._drawGridLines('height'); // horizontal lines
+			return this;
 		},
+		/**
+		 * Draw the vertical or horizontal grid lines
+		 * @method _drawGridlines
+		 * @params {String} prop  "width" for vertical lines, "height" for horizontal lines
+		 */			
 		_drawGridLines: function _drawGridLines(prop) {
 			this.grid.ctx.beginPath();
 			for (var i = 0; i <= this.grid[prop]; i += this.blockSize+1) {
@@ -131,6 +205,12 @@
 			}
 			this.grid.ctx.stroke();
 		},
+		/**
+		 * Draw the board containing visited points
+		 * @method drawVisitedBoard
+		 * @return {GameRenderer}
+		 * @chainable
+		 */				
 		drawVisitedBoard: function drawVisitedBoard() {
 			this.visitedBoard.ctx.clearRect(0, 0, this.visitedBoard.width, this.visitedBoard.height);
 			if (!this.drawVisited) {
@@ -148,8 +228,15 @@
 					this.blockSize,
 					this.blockSize
 				);
-			}				
+			}
+			return this;			
 		},
+		/**
+		 * Draw the board containing currently alive points
+		 * @method drawVisitedBoard
+		 * @return {GameRenderer}
+		 * @chainable
+		 */			
 		drawBoard: function drawBoard() {	
 			this.board.ctx.fillStyle = '#000';
 			this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
@@ -181,6 +268,11 @@
 				}
 			}
 		},
+		/**
+		 * Get the stats to display on the stats overlay
+		 * @method getStats
+		 * @return {Object}
+		 */
 		getStats: function getStats() {
 			return {
 				Board: this.boardSize.x + 'x' + this.boardSize.y,
@@ -189,6 +281,12 @@
 				FPS: this.getFps() || '-'
 			};
 		},
+		/**
+		 * Draw the stats overlay box
+		 * @method drawStats
+		 * @return {GameRenderer}
+		 * @chainable
+		 */
 		drawStats: function drawStats() {
 			this.board.ctx.fillStyle = 'rgba(255,255,255,0.75)';
 			this.board.ctx.fillRect(0,22,115,64);
@@ -199,7 +297,14 @@
 			this.board.ctx.fillText('Tick: ' + stats.Tick, 6, 55);
 			this.board.ctx.fillText('Cells: ' + stats.Cells, 6, 67);
 			this.board.ctx.fillText('FPS: ' + stats.FPS, 6, 79);
+			return this;
 		},
+		/**
+		 * Periodically, we use this method to kill points that are 15 or more points offscreen
+		 * @method killOffscreenPoints
+		 * @return {GameRenderer}
+		 * @chainable
+		 */
 		killOffscreenPoints: function killOffscreenPoints() {
 			this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
 				if (xy[0] < -15 || xy[1] < -15 || xy[0] > this.boardSize.x + 15 || xy[1] > this.boardSize.y + 15) {

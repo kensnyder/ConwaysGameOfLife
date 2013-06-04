@@ -1,6 +1,10 @@
 (function(exports) {
 	"use strict";
 
+	/**
+	 * A list of game shapes that can be chosen and added to the board
+	 * @property GameShapeLibrary
+	 */
 	exports.GameShapeLibrary = [
 		{
 			id: 'CONWAYJS',
