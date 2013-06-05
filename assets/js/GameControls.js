@@ -333,7 +333,7 @@
 					return this;
 				}
 				if (!value.match(/^B?[0-8]*\/S?[0-8]*$/)) {
-					alert('Invalid rulestring. Use the format "23/3" or "B3/S23".');
+					alert('Invalid rulestring. Rulestring must be in the format "23/3" or "B3/S23".');
 					return this;
 				}
 				this.elements.ruleSelect.options[this.elements.ruleSelect.options.length] = new Option(value, value);
@@ -911,7 +911,7 @@
 			}
 		}
 		select.selectedIndex = 0;
-		return 0;
+		return false;
 	}
 	
 	// helper to get the value of a select element

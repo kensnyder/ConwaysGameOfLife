@@ -23,10 +23,13 @@
 					<input id="startButton" type="button" />
 				</span>
 				<span class="control">
+					<input id="clearButton" type="button" value="Clear" />
+				</span>				
+				<span class="control" style="display: none">
 					<input id="resetButton" type="button" value="Reset" />
 				</span>
 				<span class="control">
-					<input id="saveButton" type="button" value="Save" />
+					<input id="saveButton" type="button" value="Save" style="display: none" />
 				</span>
 			</div>
 			<a id="optionsButton" title="Options..." href="#">⚙ <span id="optionsSummary"></span></a>
@@ -36,7 +39,7 @@
 						<th>Cell Size:</th>
 						<td>
 							<select id="blockSizeSelect"></select>
-							<input id="autoSize" type="button" value="Auto" />
+							<input id="autoSize" type="button" value="Auto" style="display: none" />
 						</td>
 					</tr>
 					<tr>
