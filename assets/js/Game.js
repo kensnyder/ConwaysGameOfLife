@@ -47,7 +47,7 @@
 			return this;
 		},
 		/**
-		 * Initialize the grid to the given grid obect
+		 * Initialize the grid to the given grid object
 		 * @method setGrid
 		 * @params {Object} grid  A grid in the same form as is stored internally
 		 * @returns {Game}
@@ -68,7 +68,7 @@
 		 * @chainable
 		 */
 		addPoint: function addPoint(x,y) {
-			// see http://jsperf.com/typeof-vs-in for why we use `!== undefined`
+			// see http://jsperf.com/typeof-vs-in for why we use `=== undefined`
 			if (this.grid[x+','+y] === undefined) {				
 				this.grid[x+','+y] = true;
 				this.numPoints++;
@@ -83,9 +83,9 @@
 		 * @chainable
 		 */
 		addPoints: function addPoints(points) {
-			points.forEach(function(point) {
-				this.addPoint(point[0], point[1]);
-			}.bind(this));
+			for (var i = 0, len = points.length; i < len; i++) {				
+				this.addPoint(points[i][0], point[i][1]);
+			}
 			return this;
 		},
 		/**

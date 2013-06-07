@@ -214,7 +214,7 @@
 		drawVisitedBoard: function drawVisitedBoard() {
 			this.visitedBoard.ctx.clearRect(0, 0, this.visitedBoard.width, this.visitedBoard.height);
 			if (!this.drawVisited) {
-				return;
+				return this;
 			}
 			this.visitedBoard.ctx.fillStyle = this.visitedColor;
 			var w = this.blockSize + (this.useGridlines ? 1 : 0);
@@ -311,6 +311,7 @@
 					this.game.removePoint(xy[0], xy[1]);
 				}
 			}.bind(this));
+			return this;
 		}
 	};
 }(typeof exports === 'undefined' ? this : exports));
