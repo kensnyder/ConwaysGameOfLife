@@ -50,8 +50,15 @@ a {
 	font-size: 11px;
 	height: 18px;
 }
+#options #ruleSelect optgroup,
+#options #ruleSelect option,
 #options #ruleSelect {
-	font: 10px Consolas, Monaco, "Courier New", Courier, monospace;
+	font: 10px Monaco, "Bitstream Vera Sans Mono", Consolas, "Courier New", monospace;
+	font-style: normal;
+	background-color: #fff;
+}
+#options #ruleSelect optgroup[label] {
+	background-color: #ddd;
 }
 #options th {
 	text-align: right;

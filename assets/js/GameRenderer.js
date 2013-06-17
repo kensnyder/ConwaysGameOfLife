@@ -18,6 +18,7 @@
 		this.visitedColor = options.visitedColor || '#ceffde'; // green
 		this.setup();
 		this.setBlockSize(options.blockSize || 6);
+		this.garbageDistance = 30;
 		this.perf = {};
 	}
 
@@ -44,6 +45,22 @@
 	/**
 	 * Hex code or rgb code to use as color of visited points
 	 * @property {String} visitedColor
+	 */
+	/**
+	 * How far offscreen points must be to be garbage collected periodically
+	 * @property {Number} garbageDistance
+	 */
+	/**
+	 * Canvas to display gridlines
+	 * @property {HTMLCanvasElement} grid
+	 */
+	/**
+	 * Canvas to display visited squares
+	 * @property {HTMLCanvasElement} visitedBoard
+	 */
+	/**
+	 * Canvas to display squares
+	 * @property {HTMLCanvasElement} board
 	 */
 	/**
 	 * Performance metrics such as fps
@@ -140,7 +157,7 @@
 		/**
 		 * Create a canvas element, append it to our container, set to largest possible size, and listen for window resize
 		 * @method _makeCanvas
-		 * @return {HTMLElement}  The canvas element
+		 * @return {HTMLCanvasElement}  The canvas element
 		 */
 		_makeCanvas: function _makeCanvas() {
 			var canvas = document.createElement('canvas');
@@ -300,14 +317,14 @@
 			return this;
 		},
 		/**
-		 * Periodically, we use this method to kill points that are 15 or more points offscreen
+		 * We call this method to periodically garbage collect points that are too far offscreen (this.garbageDistance)
 		 * @method killOffscreenPoints
 		 * @return {GameRenderer}
 		 * @chainable
 		 */
 		killOffscreenPoints: function killOffscreenPoints() {
 			this.game.getPoints().forEach(function _killPointIfOffscreen(xy) {
-				if (xy[0] < -15 || xy[1] < -15 || xy[0] > this.boardSize.x + 15 || xy[1] > this.boardSize.y + 15) {
+				if (xy[0] < -this.garbageDistance || xy[1] < -this.garbageDistance || xy[0] > this.boardSize.x + this.garbageDistance || xy[1] > this.boardSize.y + this.garbageDistance) {
 					this.game.removePoint(xy[0], xy[1]);
 				}
 			}.bind(this));

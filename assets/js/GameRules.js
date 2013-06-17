@@ -27,8 +27,8 @@
 		{
 			rule: "23/37",
 			name: "DryLife",
-			desc: "An exploding rule closely related to Conway's Life, named after the fact that the standard spaceships bigger than the glider do not function in the rule. Has a small puffer based on the R-pentomino, w",
-			type: "explosive"
+			desc: "An chaotic rule closely related to Conway's Life, named after the fact that the standard spaceships bigger than the glider do not function in the rule. Has a small puffer based on the R-pentomino, w",
+			type: "chaotic"
 		},
 		{
 			rule: "12345/3",
@@ -51,8 +51,8 @@
 		{
 			rule: "023/3",
 			name: "DotLife",
-			desc: "An exploding rule closely related to Conway's Life. The B-heptomino is a common infinite growth pattern in this rule, though it can be stabilized into a spaceship.",
-			type: "explosive"
+			desc: "A variation on Conway's Game of Life in which lone cells stay alive.",
+			type: "chaotic"
 		},
 		{
 			rule: "4567/345",
@@ -99,8 +99,8 @@
 		{
 			rule: "45678/3",
 			name: "Coral",
-			desc: "An exploding rule in which patterns grow slowly and form coral-like textures.",
-			type: "explosive"
+			desc: "A rule in which patterns grow slowly and form coral-like textures.",
+			type: "expansive"
 		},
 		{
 			rule: "34/34",

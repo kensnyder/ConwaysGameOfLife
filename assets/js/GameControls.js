@@ -1,4 +1,4 @@
-(function(exports) {
+(function(window, document) {
 	"use strict";
 
 	/**
@@ -8,7 +8,7 @@
 	 * @param {HTMLElement} controls  A DOM element that contains all the controls
 	 * @param {HTMLElement} board  The DOM element to which to render the board using canvas
 	 */
-	exports.GameControls = function(controls, board) {
+	window.GameControls = function(controls, board) {
 		this.options = {
 			board: board
 		};
@@ -72,7 +72,7 @@
 	 * @property {HTMLElement} elements.optionsClose  The element that when clicked hides the list of options
 	 * @property {HTMLElement} elements.board  The element that contains the canvas board
 	 */
-	exports.GameControls.prototype = {
+	window.GameControls.prototype = {
 		/**
 		 * Setup all the controls
 		 * @method setup
@@ -94,7 +94,7 @@
 			this._setupSaveButton();
 			this._setupClearButton();
 			this._setupResetButton();
-			this._setupAutoSize();
+			this._setupFitToShape();
 			this._setupPan();
 		},
 		/**
@@ -122,28 +122,52 @@
 			if (this.game.numPoints == 0) {
 				this.stop();
 			}
-			if (this.tick % 100 == 0) {
+			// garbage collect offscreen points every 10s
+			if (Math.floor(+new Date / 1000) % 10 == 0) {
 				this.renderer.killOffscreenPoints();
 			}
 		},		
 		/**
 		 * Setup the auto size button
-		 * @method _setupAutoSize
+		 * @method _setupFitToShape
 		 */
-		_setupAutoSize: function _setupAutoSize() {
-			this.elements.autoSize.onclick = this.autoSize.bind(this);
+		_setupFitToShape: function _setupFitToShape() {
+			this.elements.fitToShape.onclick = this.fitToShape.bind(this);
+			window.addEventListener('keydown', function(evt) {
+				if (!this.keyControlsEnabled) {
+					return;
+				}
+				if (evt.which === 70) {
+					this.fitToShape();
+				}
+			}.bind(this), false);
 		},
 		/**
-		 * Automatically size the board to fit all the points
-		 * @method autoSize
+		 * Size the board to fit all the points
+		 * @method fitToShape
 		 * @return {GameControls}
 		 * @chainable
 		 */
-		autoSize: function autoSize() {
+		fitToShape: function fitToShape() {
 			var minmax = this.getBoardMinMax();
-			// TODO: this.setBlockSize
-			this.renderer.setBoardSize(Math.round(minmax[1][0] * 1.2), Math.round(minmax[1][1] * 1.2));
-			// TODO: this pan
+			var min = minmax[0];
+			var max = minmax[1];
+			var shapeSize = {x: max[0]-min[0]+1, y: max[1]-min[1]+1};
+			// use 0.9 to give some breathing room around the sizes
+			var blockSize = Math.min(this.renderer.grid.width * 0.8 / shapeSize.x, this.renderer.grid.height * 0.8 / shapeSize.y).toFixed(2);
+			if      (blockSize < 0.25) blockSize = 0.25;
+			else if (blockSize < 0.33) blockSize = 0.33;
+			else if (blockSize < 0.50) blockSize = 0.50;
+			else if (blockSize < 1.00) blockSize = 1.00;
+			else blockSize = Math.floor(blockSize);
+			if (blockSize < 4) {
+				this.disableGridlines();
+			}
+			else {
+				this.enableGridlines();
+			}
+			this.setBlockSize(blockSize);
+			this.centerShapeOnBoard();
 			return this;
 		},
 		/**
@@ -300,14 +324,27 @@
 		 * @method _setupRuleSelect
 		 */
 		_setupRuleSelect: function _setupRuleSelect() {
-			var select = this.elements.ruleSelect;
-			select.options[0] = new Option('Custom...', 'custom');
-			GameRules.forEach(function(rule, i) {
-				select.options[i+1] = new Option(padRule(rule.rule) + ' ' + rule.name, rule.rule);
-			});
-			select.onchange = this._handleRuleSelect.bind(this);
+			this._populateRuleSelect();
+			this.elements.ruleSelect.onchange = this._handleRuleSelect.bind(this);
 			this.setRule('23/3');
 			this.updateOptionsSummary();
+		},
+		_populateRuleSelect: function _populateRuleSelect() {
+			var select = this.elements.ruleSelect;
+			select.options[0] = new Option('Custom...', 'custom');
+			select.options[0].title = 'Type in a custom rule.';
+			var groups = {};
+			['Chaotic','Stable','Expansive','Explosive'].forEach(function(type) {
+				var grp = document.createElement('optgroup');
+				groups[type.toLowerCase()] = grp;
+				grp.label = type;
+				select.appendChild(grp);
+			});
+			GameRules.forEach(function(rule) {
+				var opt = new Option(padRule(rule.rule) + ' ' + rule.name, rule.rule);
+				opt.title = rule.desc;
+				groups[rule.type].appendChild(opt);
+			});
 		},
 		/**
 		 * Respond to rule selection
@@ -453,6 +490,7 @@
 			}
 			select.onchange = this._handleBlockSizeSelect.bind(this);
 			this.setBlockSize(6);
+			window.addEventListener('keyup', this._handleBlockSizeKeys.bind(this), false);	
 		},
 		/**
 		 * Respond to a change in block size drop down
@@ -462,10 +500,51 @@
 			var select = this.elements.blockSizeSelect;
 			select.blur();
 			var newSize = select.options[select.selectedIndex].value;
-			if (newSize < 3) {
+//			if (newSize == 'auto') {
+//				this._fitInterval = setInterval(this.fitToShape.bind(this), 2000);
+//				return;
+//			}
+//			else {
+//				clearInterval(this._fitInterval);
+//			}
+			if (newSize < 4) {
 				this.disableGridlines();
 			}
+			else {
+				this.enableGridlines();
+			}
 			this.setBlockSize(newSize);
+			this.centerShapeOnBoard();			
+		},
+		_handleBlockSizeKeys: function _handleBlockSizeKeys(evt) {
+			if (!this.keyControlsEnabled) {
+				return;
+			}
+			var select = this.elements.blockSizeSelect;
+			if (
+				(evt.which === 173 || evt.which === 109)
+				&& select.selectedIndex > 0
+			) {
+				select.selectedIndex--;
+				this._handleBlockSizeSelect();
+			}
+			else if (
+				(evt.which === 61 || evt.which == 107)
+				&& select.selectedIndex + 1 < select.length
+			) {
+				select.selectedIndex++;
+				this._handleBlockSizeSelect();
+			}			
+		},
+		centerShapeOnBoard: function centerShapeOnBoard() {
+			var minmax = this.getBoardMinMax();
+			var min = minmax[0];
+			var max = minmax[1];
+			var shapeSize = {x: max[0]-min[0]+1, y: max[1]-min[1]+1};
+			var startX = Math.ceil((this.renderer.boardSize.x - shapeSize.x) / 2);
+			var startY = Math.ceil((this.renderer.boardSize.y - shapeSize.y) / 2);
+			this.pan(min[0] - startX, min[1] - startY);
+			return this;
 		},
 		/**
 		 * Set the size of each block
@@ -614,7 +693,7 @@
 		stop: function stop() {
 			var button = this.elements.startButton;
 			button.value = this.startButtonText;
-			document.body.className = document.body.className.replace(' game-started', '') + ' game-paused';
+			document.body.className = document.body.className.replace(/ game-(started|paused)/g, '') + ' game-paused';
 			this.isRunning = false;
 			clearInterval(this._intervalId);
 			return this;
@@ -631,7 +710,7 @@
 			}
 			var button = this.elements.startButton;
 			button.value = this.pauseButtonText;
-			document.body.className = document.body.className.replace(' game-paused', '') + ' game-started';
+			document.body.className = document.body.className.replace(/ game-(started|paused)/g, '') + ' game-started';
 			this.isRunning = true;
 			this._startTime = +new Date;
 			this._intervalId = setInterval(this._tickAndDraw.bind(this), this.options.interval);
@@ -643,7 +722,7 @@
 		 */
 		_setupBoardClick: function _setupBoardClick() {
 			var board = this.elements.board;
-			this.inMousedown = false;
+			var which;
 			var drawAtCursor = function(evt) {
 				var x = Math.floor(
 					evt.pageX / 
@@ -653,8 +732,8 @@
 					evt.pageY / 
 					(this.renderer.blockSize + (this.renderer.useGridlines ? 1 : 0))
 				);
-				if (evt.button == 2) {
-					evt.preventDefault();
+				if (which == 3) {
+					// right click
 					this.game.removePoint(x,y);
 				}
 				else {
@@ -662,16 +741,23 @@
 				}
 				this.renderer.draw();
 			}.bind(this);
-			board.oncontextmenu = drawAtCursor;
-			board.onclick = drawAtCursor;
-			board.onmousedown = function() {
-				setTimeout(function(){this.inMousedown = true}.bind(this),500);
+			board.onmousedown = function(evt) {
+				which = evt.which; // check if we are in right or left click
 				board.onmousemove = drawAtCursor;
-			}.bind(this);
+			};
 			board.onmouseup = function() {
-				setTimeout(function(){this.inMousedown = false}.bind(this),500);
+				which = null;
 				board.onmousemove = null;
-			}.bind(this);
+			};
+			board.onclick = function(evt) {
+				which = evt.which;
+				drawAtCursor(evt);
+			}
+			board.oncontextmenu = function(evt) {
+				which = 3;
+				evt.preventDefault();
+				drawAtCursor(evt);
+			};
 		},
 		/**
 		 * Listen for save button click
@@ -857,6 +943,7 @@
 			if (typeof this.initialGrid == 'object') {
 				this.game.setGrid(this.initialGrid);
 			}
+			this.centerShapeOnBoard();
 			this.renderer.drawVisitedBoard();
 			this.renderer.draw();
 			return this;
@@ -936,4 +1023,4 @@
 		return rule + full.slice(rule.length).replace(/ /g, '\xA0');
 	}
 	
-}(typeof exports === 'undefined' ? this : exports));
+}(window, document));
