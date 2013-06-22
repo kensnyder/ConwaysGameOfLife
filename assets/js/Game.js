@@ -185,8 +185,15 @@
 		 * @chainable
 		 */
 		setRuleString: function setRuleString(rulestring) {
-			var birth, survive;
-			this.rule = {};
+			this.rule = this.parseRuleString(rulestring);
+			return this;
+		},
+		parseRuleString: function parseRuleString(rulestring) {
+			var birth, survive, rule;
+			if (!rulestring.match(/^B?[0-8]*\/S?[0-8]*$/)) {
+				throw new Error('Invalid rulestring `' + rulestring + '`. Rulestring must be in the format "23/3" or "B3/S23".');
+			}
+			rule = {};
 			var match = (/^B(\d+)\/S(\d+)$/i).exec(rulestring);
 			if (match) {
 				birth = match[1];
@@ -194,27 +201,33 @@
 			}
 			else {
 				match = rulestring.split('/');
-				birth = match[1];
+				birth = match[1] || '';
 				survive = match[0];
 			}
-			this.rule.numeric = survive + '/' + birth;
-			this.rule.bs = 'B' + birth + '/S' + survive;
-			this.rule.max = -1;
-			this.rule.birth = {};
-			this.rule.survive = {};
+			rule.numeric = survive + '/' + birth;
+			rule.bs = 'B' + birth + '/S' + survive;
+			rule.max = -1;
+			rule.birth = {};
+			rule.survive = {};
 			birth.split('').forEach(function(digit) {
-				if (digit > this.rule.max) {
-					this.rule.max = +digit;
+				if (digit > rule.max) {
+					rule.max = +digit;
 				}
-				this.rule.birth[digit] = true;
-			}.bind(this));
+				rule.birth[digit] = true;
+			});
+			if (rule.birth['0']) {
+				throw new Error('Invalid rulestring `' + rulestring + '`. Birth of cells with zero neighbors is not supported.');
+			}
 			survive.split('').forEach(function(digit) {
-				if (digit > this.rule.max) {
-					this.rule.max = +digit;
+				if (digit > rule.max) {
+					rule.max = +digit;
 				}
-				this.rule.survive[digit] = true;
-			}.bind(this));
-			return this;
+				rule.survive[digit] = true;
+			});
+			if (Object.keys(rule.birth).length + Object.keys(rule.survive).length === 0) {
+				throw new Error('Invalid rulestring `' + rulestring + '`. There must be some birth or survival defined.');
+			}
+			return rule;
 		},
 		/**
 		 * Convert the grid into an array of points
@@ -228,6 +241,9 @@
 				points.push([+xy[0], +xy[1]]);
 			}
 			return points;
+		},
+		setPoints: function setPoints() {
+			
 		},
 		/**
 		 * Convert the grid into a JSON string
@@ -246,6 +262,114 @@
 		unserialize: function unserialize(gridString) {
 			this.setGrid(JSON.parse(gridString));
 			return this;
+		},
+/**
+		 * Get the minimum [x,y] and maximum [x,y] that the alive points span
+		 * @method getBoundingBox
+		 * @return {Object} In the form {size:[width,height], min:[a,b], max:[x,y]}
+		 */
+		getBoundingBox: function getBoundingBox() {
+			var min = [Infinity,Infinity];
+			var max = [-Infinity,-Infinity];
+			if (this.numPoints === 0) {
+				return {
+					min : [0,0],
+					max : [0,0],
+					size: [0,0]
+				};
+			}
+			var xy, x, y;
+			for (var point in this.grid) {
+				xy = point.split(',');
+				x = +xy[0];
+				y = +xy[1];
+				if      (x < min[0]) min[0] = x;
+				else if (x > max[0]) max[0] = x;
+				if      (y < min[1]) min[1] = y;
+				else if (y > max[1]) max[1] = y;
+			}
+			return {
+				min : min,
+				max : max,
+				size: [max[0]-min[0]+1, max[1]-min[1]+1]
+			};
+		},	
+		/**
+		 * Parse an RLE formatted shape specification into an array of points
+		 * @method getPonts
+		 * @static 
+		 * @param {String} rle  The RLE 1.06 spec (e.g. b3o$3ob$bo)
+		 * @return {Array}
+		 */		
+		setRle: function setRle(rle) {
+			// convert RLE format to points
+			// http://www.conwaylife.com/wiki/Run_Length_Encoded
+			// b = dead
+			// o = alive
+			// $ = newline
+			var relX = 0, relY = 0;
+			var grid = {};
+			rle.split(/(\d+\D|\D)/).forEach(function(token) {
+				if (token.trim() == '') {
+					return '';
+				}
+				token.replace(/^(\d+)o$/, function($0, $1) {
+					var max = +$1;
+					for (var i = 0; i < max; i++) {
+						grid[(relX++)+','+relY] = true;
+					}
+				});
+				token.replace(/^(\d+)b$/, function($0, $1) {
+					relX += parseInt($1,10);
+				});
+				token.replace(/^(\d+)\$$/, function($0, $1) {
+					relX = 0;
+					relY += +$1;
+				});
+				if (token == 'o') {
+					grid[(relX++)+','+relY] = true;
+				}
+				else if (token == 'b') {
+					relX++;
+				}
+				else if (token == '$') {
+					relX = 0;
+					relY++;
+				}
+				return '';
+			});	
+			this.setGrid(grid);
+			return this;
+		},
+		getRle: function getRle() {
+			var box = this.getBoundingBox();
+			var x, y;
+			var width = box.size[0];
+			var rle = '';
+			for (y = box.min[1]; y <= box.max[1]; y++) {
+				// each row
+				for (x = box.min[0]; x <= box.max[0]; x++) {
+					// each column
+					if (this.grid[x+','+y] === undefined) {
+						rle += 'b'; // dead
+					}
+					else {
+						rle += 'o'; // alive
+					}					
+				}
+				rle += '$'; // newline at end of row
+			}
+			// use 2 newlines to represent a full empty line
+			rle = rle.replace(new RegExp('b{' + width + '}\\$', 'g'), '$$');
+			// count number of repeats and replace
+			rle = rle.replace(/(b{3,}|o{3,}|\${3,})/g, function($0, $1) {
+				return $1.length + $1.slice(0,1);
+			});
+			// remove dead cells preceeding a newline
+			rle = rle.replace(/\d*b\$/, '$');
+			// change final $ to !
+			rle = rle.replace(/\$$/, '!');
+			return rle;
 		},
 		/**
 		 * Count the number of neighbors of a given point.

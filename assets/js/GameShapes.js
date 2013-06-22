@@ -38,32 +38,34 @@
 			}
 			if (!shape) {
 				return false;
-			}
-			shape.pos = shape.pos || 'middle-center';
-			shape.zoom = shape.zoom || 6.00;
-			shape.speed = shape.speed === undefined ? 0 : shape.speed;
-			shape.rule = shape.rule || '23/3';
-			controls.setRule(shape.rule);
-			controls.setSpeed(shape.speed);
-			if (shape.zoom > 2) {
-				controls.enableGridlines();
-			}
-			else {
-				controls.disableGridlines();
-			}
-			if (shape.zoom) {
-				controls.setBlockSize(shape.zoom);
 			}			
 			if (shape.random) {
 				controls.seed(shape.ratio);
 			}
 			else {
+				shape.pos = shape.pos || 'middle-center';
+				shape.speed = shape.speed === undefined ? 0 : shape.speed;
+				shape.rule = shape.rule || '23/3';
+				controls.setRule(shape.rule);
+				controls.setSpeed(shape.speed);				
 				var x = this.getStartX(controls, shape);
 				var y = this.getStartY(controls, shape);
 				var points = this.getPoints(shape);
 				points.forEach(function(xy) {
 					controls.game.addPoint(x + xy[0], y + xy[1]);
 				});
+				if (shape.zoom) {
+					controls.setBlockSize(shape.zoom);
+					if (shape.zoom > 2) {
+						controls.enableGridlines();
+					}
+					else {
+						controls.disableGridlines();
+					}
+				}		
+				else {
+					controls.fitToShape();
+				}				
 			}
 			return this;
 		},
@@ -164,6 +166,9 @@
 				return '';
 			});	
 			return points;
+		},
+		toRle: function toRle(points) {
+			
 		}
 	};
 }(typeof exports === 'undefined' ? this : exports));

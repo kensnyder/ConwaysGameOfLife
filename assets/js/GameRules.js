@@ -147,14 +147,14 @@
 		{
 			rule: "235678/3678",
 			name: "Stains",
-			desc: "A stable rule in which most patterns tend to \"fill in\" bounded regions. Most nearby rules (such as coagulations) tend to explode.",
+			desc: "A stable rule in which most patterns tend to \"fill in\" bounded regions. Most nearby rules (such as coagulations) tend to expand.",
 			type: "stable"
 		},
 		{
 			rule: "235678/378",
 			name: "Coagulations",
-			desc: "An exploding rule in which patterns tend to expand forever, producing a thick \"goo\" as it does so.",
-			type: "explosive"
+			desc: "An expanding rule in which patterns tend to expand forever, producing a thick \"goo\" as it does so.",
+			type: "expansive"
 		},
 		{
 			rule: "2345/45678",

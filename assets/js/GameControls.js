@@ -138,6 +138,7 @@
 					return;
 				}
 				if (evt.which === 70) {
+					// letter F
 					this.fitToShape();
 				}
 			}.bind(this), false);
@@ -165,6 +166,9 @@
 			}
 			else {
 				this.enableGridlines();
+			}
+			if (blockSize > 20) {
+				blockSize = 20;
 			}
 			this.setBlockSize(blockSize);
 			this.centerShapeOnBoard();
@@ -195,14 +199,14 @@
 		 * @method _setupPan
 		 */
 		_setupPan: function _setupPan() {
-			document.addEventListener('keyup', this._handleArrowKeys.bind(this));
+			document.addEventListener('keydown', this._handleArrowKeys.bind(this));
 			document.addEventListener('mousewheel', this._handleWheel.bind(this));
 			document.addEventListener('DOMMouseScroll', this._handleWheel.bind(this));
 		},
 		/**
 		 * Respond to arrow keys by panning the board
 		 * @method _handleArrowKeys
-		 * @param {HTMLEvent} evt  The keyup event
+		 * @param {HTMLEvent} evt  The keydown event
 		 */
 		_handleArrowKeys: function _handleArrowKeys(evt) {
 			if (!this.keyControlsEnabled) {
@@ -369,14 +373,17 @@
 				if (!value) {
 					return this;
 				}
-				if (!value.match(/^B?[0-8]*\/S?[0-8]*$/)) {
-					alert('Invalid rulestring. Rulestring must be in the format "23/3" or "B3/S23".');
+				try {
+					this.game.setRuleString(value);
+				}
+				catch (e) {
+					alert(e.message);
 					return this;
 				}
 				this.elements.ruleSelect.options[this.elements.ruleSelect.options.length] = new Option(value, value);
 			}
 			this.game.setRuleString(value);			
-			setSelectValue(this.elements.ruleSelect, value);
+			setSelectValue(this.elements.ruleSelect, this.game.rule.numeric);
 			this.updateOptionsSummary();
 			return this;
 		},
@@ -447,6 +454,22 @@
 			select.options[7] = new Option('≈1/2fps','0.50');
 			select.onchange = this._handleIntervalSelect.bind(this);
 			this.setSpeed(0);
+			window.addEventListener('keydown', function(evt) {
+				if (!this.keyControlsEnabled || (evt.which != 188 && evt.which != 190)) {
+					return;
+				}
+				var select = this.elements.intervalSelect;
+				var idx = select.selectedIndex;
+				if (evt.which == 190 && idx > 0) {
+					// > key
+					select.selectedIndex--;
+				}
+				else if (evt.which == 188 && idx < select.options.length - 1) {
+					// < key
+					select.selectedIndex++;
+				}
+				this.setSpeed(select.options[select.selectedIndex].value);
+			}.bind(this), true);
 		},
 		/**
 		 * Respond to a change in the interval drop down
@@ -465,8 +488,8 @@
 		 * @chainable
 		 */
 		setSpeed: function setSpeed(fps) {
-			fps = +fps;
-			this.options.interval = fps < 1 ? 0 : (1000 / fps) - 4;
+			fps = parseFloat(fps);
+			this.options.interval = fps < 0.001 ? 0 : (1000 / fps) - 4;
 			if (this.isRunning) {
 				this.stop();
 				this.start();
@@ -490,7 +513,7 @@
 			}
 			select.onchange = this._handleBlockSizeSelect.bind(this);
 			this.setBlockSize(6);
-			window.addEventListener('keyup', this._handleBlockSizeKeys.bind(this), false);	
+			window.addEventListener('keydown', this._handleBlockSizeKeys.bind(this), false);	
 		},
 		/**
 		 * Respond to a change in block size drop down
@@ -561,6 +584,7 @@
 			this.panForResize(oldBoardSize, newBoardSize);
 			this.renderer.drawAll();
 			setSelectValue(this.elements.blockSizeSelect, size.toFixed(2));
+			this.updateOptionsSummary();
 			return this;
 		},
 		/**
@@ -657,12 +681,20 @@
 			var button = this.elements.startButton;
 			var handle = this._handleStartButton.bind(this);
 			button.onclick = handle;
-			window.addEventListener('keyup', function(evt) {
+			window.addEventListener('keydown', function(evt) {
 				if (!this.keyControlsEnabled) {
 					return;
 				}
 				if (evt.which == 32 || evt.which == 13) {
+					// spacebar or enter
 					handle(evt);
+				}
+				else if (evt.which == 84) {
+					// letter t
+					if (this.isRunning) {
+						this.stop();
+					}
+					this._tickAndDraw();
 				}
 			}.bind(this), false);
 			this.stop();
@@ -827,7 +859,8 @@
 		updateOptionsSummary: function updateOptionsSummary() {
 			var rule = getSelectValue(this.elements.ruleSelect).replace(/ .+$/, '');
 			var speed = getSelectText(this.elements.intervalSelect);
-			this.elements.optionsSummary.innerHTML = 'Rule: ' + rule + ', Speed: ' + speed; 
+			var blockSize = this.renderer.blockSize;
+			this.elements.optionsSummary.innerHTML = '<strong>' + rule + '</strong>, Speed: <strong>' + speed + '</strong>, Zoom: <strong>' + blockSize + '</strong>';
 			return this;
 		},
 		/**
@@ -913,6 +946,14 @@
 		 */		
 		_setupResetButton: function _setupResetButton() {
 			this.elements.resetButton.onclick = this.reset.bind(this);
+			window.addEventListener('keydown', function(evt) {
+				if (!this.keyControlsEnabled) {
+					return;
+				}				
+				if (evt.which === 82) { // letter R
+					this.reset();
+				}
+			}.bind(this), false);
 		},
 		/**
 		 * Clear all points from the board
@@ -940,7 +981,7 @@
 			this.game.clear();
 			this.renderer.visitedPoints = {};
 			// set to initialGrid
-			if (typeof this.initialGrid == 'object') {
+			if (!!this.initialGrid && typeof this.initialGrid == 'object') {
 				this.game.setGrid(this.initialGrid);
 			}
 			this.centerShapeOnBoard();
